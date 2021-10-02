@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\Router;
+use app\Database;
 use app\models\News;
 
 class NewsController
@@ -17,20 +18,54 @@ class NewsController
         ]);
     }
 
+    public function viewSpesificNews(Router $router)
+    {
+        $db= Database::$db;
+        $_id = $_GET['_id'] ?? null;
+        if (!$_id){
+            header('Location: /news');
+            exit;
+        }
+        $newsData = [
+            'image' => "",
+            'title' => "",
+            'content' => "",
+            'author' => "",
+            'category' => "",
+        ];
+        $news= $db->getNewsById($_id);
+        $newsData['image']= $news['image'];
+        $newsData['title']= $news['title'];
+        $newsData['content']= $news['content'];
+        $newsData['author']= $news['author'];
+        $newsData['category']= $news['category'];
+        
+        if ($news){
+            $router->renderView("news/spesific_news", [
+                'news' => $newsData,
+            ]);
+        }
+    }
+
     public static function create(Router $router)
     {
         $errors = [];
         $newsData = [
             'title' => "",
-            'author_username' => "",
+            'author' => "",
+            'author_id' => "",
             'content' => "",
             'image' => "",
+            'category' => "",
         ];
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $newsData['title'] = $_POST['title'];
-            $newsData['description'] = $_POST['description'];
-            $newsData['author'] = $_SESSION['user'];
+            $newsData['content'] = $_POST['content'];
+            $newsData['author'] = $_SESSION['username'];
+            $newsData['author_id'] = $_SESSION['_id'];
             $newsData['imageFile'] = $_FILES['image'];
+            $newsData['category'] = $_POST['category'];
 
             $news= new News();
             $news->load($newsData);
@@ -49,7 +84,7 @@ class NewsController
 
     public static function update(Router $router)
     {
-        $id = $_GET['id'] ?? null;
+        $id = $_GET['_id'] ?? null;
         if (!$id){
             header('Location: /news');
             exit;
@@ -59,9 +94,9 @@ class NewsController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $newsData['title'] = $_POST['title'];
-            $newsData['description'] = $_POST['description'];
-            $newsData['price'] = (float)$_POST['price'];
-            $newsData['imageFile'] = $_FILES['image'] ?? null;
+            $newsData['content'] = $_POST['content'];
+            $newsData['imageFile'] = $_FILES['image'];
+            $newsData['category'] = $_POST['category'];
 
             $news = new News();
             $news->load($newsData);
@@ -80,7 +115,7 @@ class NewsController
 
     public static function delete(Router $router)
     {
-        $id = $_POST['id'] ?? null;
+        $id = $_POST['_id'] ?? null;
         if (!$id){
             header('Location: /news');
             exit;

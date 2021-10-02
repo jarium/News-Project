@@ -7,23 +7,28 @@ use app\helpers\UtilHelper;
 
 class News
 {
-    private ?int $id = null;
-    private ?string $title= null;
-    private ?string $content= null;
-    private ?string $author= null;
-    private ?string $create_date= null;
-    private ?string $update_date= null;
-    private ?array $imageFile= null;
-    private ?string $comments= null;
+    public ?int $id = null;
+    public ?string $title= null;
+    public ?string $content= null;
+    public ?string $author= null;
+    public ?string $create_date= null;
+    public ?string $update_date= null;
+    public ?array $imageFile= null;
+    public ?string $imagePath= null;
+    public ?int $author_id = null;
+    public ?string $category= null;
 
     public function load($data)
     {
-        $this->id= $data['id'] ?? null;
+
+        $this->id= $data['_id'] ?? null;
         $this->title = $data['title'];
         $this->content= $data['content'];
         $this-> author = $data['author'];
+        $this-> author_id = $data['author_id'];
         $this -> imageFile = $data['imageFile'];
         $this-> imagePath = $data['image'];
+        $this-> category= $data['category'];
     }
 
     public function save()
@@ -35,8 +40,11 @@ class News
         if (!$this->content){
             $errors[]= 'Content for the news is required';
         }
-        if (!$this->imageFile){
+        if (!is_uploaded_file($this->imageFile['tmp_name'])){
             $errors[] = 'Image for the news is required';
+        }
+        if ($this->category == 'Category...'){
+            $errors[] = 'Category for the news is required';
         }
 
         if (!is_dir(__DIR__.'/../public/images')){

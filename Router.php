@@ -23,22 +23,22 @@ Class Router
    }
    public function resolve()
    {
-       $currentUrl = $_SERVER['PATH_INFO'] ?? '/';
+       $currentUrl = $_SERVER['PATH_INFO'] ?? '/'; //bakılacak
        $method= $_SERVER['REQUEST_METHOD'];
 
        if ($method === 'GET'){
-           $fn = $this->getRoutes[$currentUrl] ?? null;// /products
+           $fn = $this->getRoutes[$currentUrl] ?? null;// /news /users
        } else {
            $fn = $this->postRoutes[$currentUrl] ?? null;
        }
        if ($fn){
            call_user_func($fn,$this);
        } else {
-           echo "Page not found";
+           header("Location: /");
        }
     }
 
-    public function renderView($view, $params = []) // products/index
+    public function renderView($view, $params = []) // news/index
     {
         foreach ($params as $key => $value){
             $$key = $value;
