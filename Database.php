@@ -4,6 +4,7 @@ namespace app;
 use PDO;
 use app\models\News;
 use app\models\User;
+use app\models\Comments;
 
 class Database
 {
@@ -155,6 +156,34 @@ class Database
             $statement->execute();
         }
     }
+
+    public function getComments($newsId)
+    {
+        $statement = $this->pdo->prepare("SELECT * FROM comments WHERE news_id = $newsId");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createComment(Comments $comments)
+    {
+        $statement = $this->pdo->prepare("INSERT INTO comments (news_id, commenter_id, commenter_username, comment, isAnon)
+        VALUES (:news_id, :commenter_id, :commenter_username, :comment, :isAnon)");
+        $statement->bindValue(':news_id', $comments-> news_id);
+        $statement->bindValue(':commenter_id', $comments->commenter_id);
+        $statement->bindValue(':commenter_username', $comments->commenter_username);
+        $statement->bindValue(':comment', $comments->comment);
+        $statement->bindValue(':isAnon', $comments->isAnon);
+        $statement->execute();
+    }
+    public function deleteComment(Comments $comments)
+    {
+        
+    }
+    public function updateComment(Comments $comments)
+    {
+
+    }
+
     public function loginCheck($username,$password)
     {
         $hashed_pass= $this->getData('users','username',$username,'password');

@@ -33,15 +33,9 @@
            <td><?php echo $new['content'] ?></td>
            <td><?php echo $new['create_date'] ?></td>
            <td>
-               <a href="/news?_id=<?php echo $new['_id'] ?>" button type="button" class="btn btn-primary">Show</a>
-               <form style="display: inline-block" method="post" action="/news/delete">
-                   <input type="hidden" name="_id" value="<?php echo $new['_id'] ?>">
-                   <button type="submit" class="btn btn-danger">Delete</button>
-               </form>
+               <a href="/news/spesific?_id=<?php echo $new['_id'] ?>" button type="button" class="btn btn-primary">Show</a>
            </td>
        </tr>
     <?php endforeach; endif;?>
     </tbody>
  </table>
-
- <?php var_dump($_SESSION);

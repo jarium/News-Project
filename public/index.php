@@ -12,7 +12,7 @@ $auth = new Authorization;
 $router = new Router();
 
 /**
- * Route lar alanındaki izlediğim mantık şu: Herkesin her zaman erişebileceği bir route var. Bu da haberler ve haberin detayları.
+ * Route lar alanındaki izlediğim mantık şu: Herkesin her zaman erişebileceği route'lar var. Bu da haberler ve haberin detayları.
  * Geri kalan route lar da, kullanıcının login işlemi gerçekleştirip gerçekleştirmediğine ya da auth level'ının yeterli olup olmadığına göre değişiyor.
  * Eğer bir route kullanıcı için tanımlanmıyorsa ya da geçersiz bir route girmişse, / yani /news (haberlerin gösterildiği anasayfa) sayfasına yönlendirilir.
  **/
@@ -20,7 +20,8 @@ $router = new Router();
 //Herkesin erişebileceği route lar
 $router ->get('/',[NewsController::class, 'index']); //News list
 $router ->get('/news',[NewsController::class, 'index']); //News list
-//$router ->get("/news?_id=$id",[NewsController::class,'viewSpesificNews']);
+$router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']);
+$router ->post('/news/spesific',[NewsController::class,'viewSpesificNews']);
 
 
 

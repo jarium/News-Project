@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\Router;
 use app\Database;
 use app\models\News;
+use app\models\Comments;
 
 class NewsController
 {
@@ -18,7 +19,7 @@ class NewsController
         ]);
     }
 
-    public function viewSpesificNews(Router $router)
+    public static function viewSpesificNews(Router $router)
     {
         $db= Database::$db;
         $_id = $_GET['_id'] ?? null;
@@ -26,25 +27,66 @@ class NewsController
             header('Location: /news');
             exit;
         }
+        $news= $db->getNewsById($_id);
+
+        if (!$news){
+            header('Location: /news');
+            exit;
+        }
         $newsData = [
+            '_id' => "",
             'image' => "",
             'title' => "",
             'content' => "",
-            'author' => "",
+            'author_username' => "",
             'category' => "",
+            'create_date' => "",
+            'update_date' => "",
         ];
-        $news= $db->getNewsById($_id);
+
+        $comments = $db->getComments($_id);
+        $newsData['_id'] = $news['_id'];
         $newsData['image']= $news['image'];
         $newsData['title']= $news['title'];
         $newsData['content']= $news['content'];
-        $newsData['author']= $news['author'];
+        $newsData['author_username']= $news['author_username'];
         $newsData['category']= $news['category'];
-        
-        if ($news){
-            $router->renderView("news/spesific_news", [
-                'news' => $newsData,
-            ]);
-        }
+        $newsData['create_date']= $news['create_date'];
+        $newsData['update_date']= $news['update_date'];
+
+            
+        $errors = [];
+        $commentData = [
+            'news_id' => "",
+            'commenter_id' => "",
+            'commenter_username' => "",
+            'comment' => "",
+            'isAnon' => 0,
+             ];
+
+         //Create comment    
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $commentData['news_id']= $news['_id'];
+            $commentData['commenter_id']= $_SESSION['_id'];
+            $commentData['commenter_username']= $_SESSION['username'];
+            $commentData['comment']= $_POST['comment'];
+            if (isset($_POST['isAnon'])){
+                $commentData['isAnon']=1;
+            }
+
+            $add_comments= new Comments();
+            $add_comments->load($commentData);
+            $errors= $add_comments->save();
+            if (empty($errors)){
+             header("Refresh:0");
+             exit;
+             }
+        }//Create comment end
+        $router->renderView("news/spesific_news", [
+            'news' => $newsData,
+            'comments' => $comments,
+            'add_comments' => $commentData
+        ]);
     }
 
     public static function create(Router $router)
