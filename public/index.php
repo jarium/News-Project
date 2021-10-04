@@ -20,14 +20,14 @@ $router = new Router();
 //Herkesin erişebileceği route lar
 $router ->get('/',[NewsController::class, 'index']); //News list
 $router ->get('/news',[NewsController::class, 'index']); //News list
-$router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']);
-$router ->post('/news/spesific',[NewsController::class,'viewSpesificNews']);
-
-
+$router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
+$router ->get('/news/category',[NewsController::class,'viewNewsWithCategory']); //Kategoriye göre haberleri herkes görebilir
+$router ->get('/about',[NewsController::class,'about']); //About sayfasına herkes erişebilir
 
 if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
     $router ->get('/users',[UserController::class, 'index']); //Giriş varsa user bilgileri(index)
     $router ->get('/users/logout',[UserController::class, 'logout']); //Giriş varsa logout hakkı olur
+    $router ->post('/news/spesific',[NewsController::class,'viewSpesificNews']); //Habere yorum atmak (post) için giriş gerekir.
     
     if ($auth->getAuthLevel() > 1){ //1(Kullanıcı)'den büyük auth level, editör ve sonrası demek.
         $router ->get('/news/create',[NewsController::class, 'create']); //Create news get (editor + only)
@@ -35,14 +35,16 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->get('/news/update',[NewsController::class, 'update']); //Update news get(editor + only, max 2 gün geçmiş olmalı)
         $router ->post('/news/update',[NewsController::class, 'update']); //Update news post(editor + only, max 2 gün geçmiş olmalı)
         $router ->post('/news/delete',[NewsController::class, 'delete']); //Delete news 
+        //$router ->get('/panels/editor',); //Editör paneli
+        //$router ->post('/panels/editor',); //Editör paneli
     }
     elseif ($auth->getAuthLevel() > 2){ //2(Editör)'den büyük auth level, mod ve sonrası demek.
-        //$router ->get('/panel',); //Mod paneli
-        //$router ->post('/panel',); //Mod paneli
+        //$router ->get('/panels/mod',); //Mod paneli
+        //$router ->post('/panels/mod',); //Mod paneli
     }
     elseif ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
-        //$router ->get('/admin',); //Admin paneli
-        //$router ->post('/admin',); //Admin paneli
+        //$router ->get('/panels/admin',); //Admin paneli
+        //$router ->post('panels/admin',); //Admin paneli
     }
 
 }else{//Giriş yapmayan kullanıcılar için route lar

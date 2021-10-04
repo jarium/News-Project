@@ -40,7 +40,7 @@ class News
         if (!$this->content){
             $errors[]= 'Content for the news is required';
         }
-        if (!is_uploaded_file($this->imageFile['tmp_name'])){
+        if (!is_uploaded_file($this->imageFile['tmp_name']) && !$this->imagePath){
             $errors[] = 'Image for the news is required';
         }
         if ($this->category == 'Category...'){

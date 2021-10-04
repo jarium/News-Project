@@ -4,15 +4,23 @@ namespace app\controllers;
 
 use app\Router;
 use app\models\User;
-USE app\Authentication;
+use app\Authentication;
 
 class UserController
 {
     public static function index(Router $router)
     {
-        $user=$router->db->getUsers();
+        $_id= Authentication::getUserSessionInfo('_id');
+        $search = $_GET['search'] ?? '';
+        $user=$router->db->getUsersById($_id);
+        $comments= $router->db->getCommentsByUserId($_id,$search);
+        $comments_count = $router->db->getCommentsCountByUserId($_id);
+        
+
         $router->renderView('users/index', [
-            'user' => $user
+            'user' => $user,
+            'comments' => $comments,
+            'comments_count' => $comments_count
         ]);
     }
     public static function create(Router $router)
@@ -28,10 +36,10 @@ class UserController
 
         ];
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $userData['username'] = $_POST['username'];
-            $userData['firstname'] = $_POST['firstname'];
-            $userData['lastname'] = $_POST['lastname'];
-            $userData['email'] = $_POST['email'];
+            $userData['username'] = trim($_POST['username']);
+            $userData['firstname'] = trim($_POST['firstname']);
+            $userData['lastname'] = trim($_POST['lastname']);
+            $userData['email'] = trim($_POST['email']);
             $userData['password'] = $_POST['password'];
             $userData['password_confirm'] = $_POST['password_confirm'];
 
@@ -39,7 +47,7 @@ class UserController
             $user->load($userData);
             $errors= $user->save();
             if (empty($errors)){
-                header('Location: /users');
+                header('Location: /users/login');
                 exit;
             }
 
@@ -75,10 +83,13 @@ class UserController
             'errors' => $errors
         ]);
     }
-    public static function logout(Router $router){
+    public static function logout(){
         $authentication= new Authentication;
         $authentication->logout();
 
-        $router->renderView('/', []);
+        header('Location: /');
+        exit;
+      
+        
     }
 }

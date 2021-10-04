@@ -14,4 +14,14 @@ class UtilHelper
         }
         return $str;
     }
+
+    public function lengthValidation($value,$lengthMin,$lengthMax){
+        if (strlen($value) < $lengthMin){
+            return false;
+        }elseif(strlen($value) > $lengthMax){
+            return false;
+        }else{
+            return true;
+        }
+    }
 }

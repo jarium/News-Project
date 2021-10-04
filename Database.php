@@ -52,25 +52,47 @@ class Database
         }
     }
 
-    public function getNews($search="")
-    {
+    public function getNews($search="",$admin=false)
+    { if($admin){
+        if ($search){
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title ORDER BY create_date DESC');
+            $statement-> bindValue(':title', "%$search%");
+        } else {
+            $statement= $this->pdo->prepare('SELECT * FROM news ORDER BY create_date DESC');
+        }
+      }else{
         if ($search){
             $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC');
             $statement-> bindValue(':title', "%$search%");
-        } else {
+        }else {
             $statement= $this->pdo->prepare('SELECT * FROM news WHERE isDeleted = 0 ORDER BY create_date DESC');
         }
-        $statement-> execute();
-        if ($statement->rowCount() < 1){
-            return null;
-        }else{
-            return $statement->fetchAll(PDO::FETCH_ASSOC);
-        }
+      }
+      $statement-> execute();
+      return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getNewsById($id)
+    public function getNewsWithCategory($category,$search)
     {
-        $statement = $this->pdo->prepare('SELECT * FROM news WHERE _id= :id AND isDeleted = 0');
+        if ($search){
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title AND category = :category AND isDeleted = 0 ORDER BY create_date DESC');
+            $statement->bindValue(':category',$category);
+            $statement->bindValue(':title',"%$search%");
+        }else{
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE category = :category AND isDeleted = 0 ORDER BY create_date DESC');
+            $statement->bindValue(':category',$category);
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getNewsById($id,$admin=false)
+    {
+        if ($admin){
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE _id= :id');
+        }else{
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE _id= :id AND isDeleted = 0');
+        }
         $statement->bindValue(':id',$id);
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
@@ -104,17 +126,19 @@ class Database
     public function updateNews(News $news)
     {
         $statement = $this->pdo->prepare ("UPDATE news SET title = :title, 
-                    image = :image, content= :content update_date= :update_date WHERE _id= :id");
+                    image = :image, content= :content, category = :category, update_date= :update_date WHERE _id= :id");
 
         $statement->bindValue(':title', $news->title);
         $statement->bindValue(':image', $news->imagePath);
-        $statement->bindValue(':content', $news->description);
-        $statement->bindValue(':id', $news->id);
+        $statement->bindValue(':content', $news->content);
+        $statement->bindValue(':category', $news->category);
         $statement->bindValue(':update_date', date('Y-m-d H:i:s'));
+
+        $statement->bindValue(':id', $news->id);
         $statement->execute();
     }
 
-    public function getUsers($search="")
+    public function getUsers($search="") //Admin
     {
         if ($search){
             $statement = $this->pdo->prepare('SELECT * FROM users WHERE username LIKE :username ORDER BY create_date DESC');
@@ -157,31 +181,58 @@ class Database
         }
     }
 
-    public function getComments($newsId)
+    public function getComments($newsId,$admin=false)
     {
-        $statement = $this->pdo->prepare("SELECT * FROM comments WHERE news_id = $newsId");
+        if ($admin){
+            $statement = $this->pdo->prepare("SELECT * FROM comments");
+        }else{
+            $statement = $this->pdo->prepare("SELECT * FROM comments WHERE news_id = $newsId AND isDeleted= 0");
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getCommentsByUserId($_id,$search="")
+    {
+        if ($search){
+            $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id." AND comment LIKE :comment ORDER BY create_date DESC");
+            $statement-> bindValue(':comment', "%$search%");
+        }else{
+            $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id." ORDER BY create_date DESC");
+        }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getCommentsCountByUserId($_id)
+    {
+        $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id."");
+        $statement->execute();
+        $statement->fetchAll(PDO::FETCH_ASSOC);
+        $count = $statement->rowCount();
+        return $count;
+    }
+
+    public function getCommentsCountByNewsId($_id)
+    {
+        $statement= $this->pdo->prepare("SELECT * FROM comments WHERE news_id = :news_id");
+        $statement->bindValue(':news_id',$_id);
+        $statement->execute();
+        $statement->fetchAll(PDO::FETCH_ASSOC);
+        $count = $statement->rowCount();
+        return $count;
+    }
+
     public function createComment(Comments $comments)
     {
-        $statement = $this->pdo->prepare("INSERT INTO comments (news_id, commenter_id, commenter_username, comment, isAnon)
-        VALUES (:news_id, :commenter_id, :commenter_username, :comment, :isAnon)");
+        $statement = $this->pdo->prepare("INSERT INTO comments (news_id, newsTitle, commenter_id, commenter_username, comment, isAnon)
+        VALUES (:news_id, :newsTitle, :commenter_id, :commenter_username, :comment, :isAnon)");
         $statement->bindValue(':news_id', $comments-> news_id);
+        $statement->bindValue(':newsTitle', $comments-> newsTitle);
         $statement->bindValue(':commenter_id', $comments->commenter_id);
         $statement->bindValue(':commenter_username', $comments->commenter_username);
         $statement->bindValue(':comment', $comments->comment);
         $statement->bindValue(':isAnon', $comments->isAnon);
         $statement->execute();
-    }
-    public function deleteComment(Comments $comments)
-    {
-        
-    }
-    public function updateComment(Comments $comments)
-    {
-
     }
 
     public function loginCheck($username,$password)
@@ -195,6 +246,13 @@ class Database
         else {
             return false;
         }
+    }
+    public function promoteUserById($_id,$role){//admin/mod
+        if ($role == 'editor'){
+            $statement= $this->pdo->prepare("INSERT INTO editor_categories (editor_id) VALUES $_id");
+            $statement->execute();
+        }
+        $this->setData('users','role',$role,$_id);
     }
 
 }

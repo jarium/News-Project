@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\Database;
 use app\Authentication;
+use app\helpers\UtilHelper;
 
 class User
 {
@@ -36,10 +37,29 @@ class User
 
     public function save()
     {
+        $helper = new UtilHelper;
         $db = Database::$db;
         $errors = [];
         if (!$this->username || !$this->firstname || !$this->lastname || !$this->email || !$this->password || !$this->password_confirm){
             $errors[]= 'Please fill all the fields to register';
+        }
+        if ($this->email && !filter_var($this->email,FILTER_VALIDATE_EMAIL)){
+            $errors[]= "Plaese enter a valid e-mail adress";
+        }
+        if ($this->email && !$helper->lengthValidation($this->email,1,200)){
+            $errors[]= "E-mail cannot be longer than 200 characters";
+        }
+        if ($this->username && !$helper->lengthValidation($this->username,3,40)){
+            $errors[]= "Username cannot be shorter than 3 and longer than 40 characters";
+        }
+        if ($this->firstname && !$helper->lengthValidation($this->firstname,1,200)){
+            $errors[]= "Name cannot be longer than 200 characters";
+        }
+        if ($this->lastname && !$helper->lengthValidation($this->lastname,1,200)){
+            $errors[]= "Last Name cannot be longer than 200 characters";
+        }
+        if ($this->password && !$helper->lengthValidation($this->password,1,200)){
+            $errors[]= "Password cannot be longer than 200 characters";
         }
         if ($this->password != $this->password_confirm){
             $errors[]= "Passwords don't match";

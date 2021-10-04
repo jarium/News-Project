@@ -19,6 +19,17 @@ class NewsController
         ]);
     }
 
+    public static function viewNewsWithCategory(Router $router)
+    {
+        $search = $_GET['search'] ?? '';
+        $category = $_GET['type'] ?? '';
+        $news=$router->db->getNewsWithCategory($category,$search);
+        $router->renderView('news/index', [
+            'news' => $news,
+            'search' => $search
+        ]);
+    }
+
     public static function viewSpesificNews(Router $router)
     {
         $db= Database::$db;
@@ -43,8 +54,6 @@ class NewsController
             'create_date' => "",
             'update_date' => "",
         ];
-
-        $comments = $db->getComments($_id);
         $newsData['_id'] = $news['_id'];
         $newsData['image']= $news['image'];
         $newsData['title']= $news['title'];
@@ -54,7 +63,7 @@ class NewsController
         $newsData['create_date']= $news['create_date'];
         $newsData['update_date']= $news['update_date'];
 
-            
+        $comments = $db->getComments($_id);
         $errors = [];
         $commentData = [
             'news_id' => "",
@@ -67,6 +76,7 @@ class NewsController
          //Create comment    
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $commentData['news_id']= $news['_id'];
+            $commentData['newsTitle'] = $news['title'];
             $commentData['commenter_id']= $_SESSION['_id'];
             $commentData['commenter_username']= $_SESSION['username'];
             $commentData['comment']= $_POST['comment'];
@@ -82,10 +92,15 @@ class NewsController
              exit;
              }
         }//Create comment end
+
+        $comments_count = $db->getCommentsCountByNewsId($_id);
+        $comments_count ? $comments_count : 0;
         $router->renderView("news/spesific_news", [
             'news' => $newsData,
             'comments' => $comments,
-            'add_comments' => $commentData
+            'comments_count' => $comments_count,
+            'add_comments' => $commentData,
+            'errors' => $errors
         ]);
     }
 
@@ -137,6 +152,8 @@ class NewsController
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $newsData['title'] = $_POST['title'];
             $newsData['content'] = $_POST['content'];
+            $newsData['author'] = $_SESSION['username'];
+            $newsData['author_id'] = $_SESSION['_id'];
             $newsData['imageFile'] = $_FILES['image'];
             $newsData['category'] = $_POST['category'];
 
@@ -165,5 +182,10 @@ class NewsController
         $router->db->deleteNews($id);
         header('Location: /news');
         exit;
+    }
+
+    public static function about(Router $router)
+    {
+        $router->renderView('news/about');
     }
 }

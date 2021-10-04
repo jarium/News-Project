@@ -14,9 +14,7 @@
  <table class="table">
     <tr>
         <th scope="col">#</th>
-        <th scope="col">Image</th>
         <th scope="col">Title</th>
-        <th scope="col">Content</th>
         <th scope="col">Create Date</th>
     </tr>
     <tbody>
@@ -24,13 +22,7 @@
     <?php if ($news): foreach ($news as $i => $new): ?>
        <tr>
            <th scope="row"><?php echo $i + 1 ?> </th>
-           <td>
-               <?php if ($new['image']): ?>
-                 <img src="../<?php echo $new['image'] ?>" class="thumb-image">
-                 <?php endif ?>
-           </td>
            <td><?php echo $new['title'] ?></td>
-           <td><?php echo $new['content'] ?></td>
            <td><?php echo $new['create_date'] ?></td>
            <td>
                <a href="/news/spesific?_id=<?php echo $new['_id'] ?>" button type="button" class="btn btn-primary">Show</a>

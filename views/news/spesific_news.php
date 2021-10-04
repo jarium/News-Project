@@ -12,26 +12,35 @@
  <p> Created: <?= $news['create_date']?></p>
 
 <!--Comments Section Start-->
-<h2 style="margin-top: 25px;">Comments</h2> <hr>
+<h2 style="margin-top: 25px;">Comments (<?=$comments_count?>)</h2> <hr>
 <?php
 if ($comments): 
     foreach ($comments as $i => $comment): ?>
-    <h4> 
+     <h4> 
         <?php if ($comment['isAnon']): echo 'Anonymous';
         else: echo $comment['commenter_username']; endif; ?>
         </h4> 
         <p><?= $comment['comment'] ?></p>
         <p><?= $comment['create_date'] ?></p>
-        <?php endforeach; endif; 
+        <?php endforeach;
 
-if (!$comments): ?> 
-    <p> No comments </p>     
-    <?php endif;?>
+    else: ?> 
+     <p> No comments </p>     
+     <?php endif;?>
 <!--Comments Section End-->
+
 
 <!--Add Comment Section Start-->
 <h2 style="margin-top: 20px;">New Comment</h2>
-<form action="" method="post" enctype = "multipart/form-data">
+<?php if (!empty($errors)): ?>
+    <div class = "alert alert-danger">
+        <?php foreach ($errors as $error): ?>
+            <div><?php echo $error ?> </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+<?php if (isset($_SESSION['username'])): ?>
+ <form action="" method="post" enctype = "multipart/form-data">
   <div class="form-group">
     <input type="text" class="form-control" name="comment" value= "<?= $add_comments['comment']?>" placeholder="Your comment" required>
   </div>
@@ -43,6 +52,8 @@ if (!$comments): ?>
   </div><br>
   <button type="submit" class="btn btn-info">Submit</button>
   </form>
-
+<?php else: ?> 
+    <p>To comment, you must login</p>
+<?php endif;?>
 <!--Add Comment Section End-->
 
