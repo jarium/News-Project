@@ -54,7 +54,7 @@ class NewsController
     }
     public static function viewNewsForUser(Router $router)
     {
-        $sql= "";
+        $sql= "(";
         $search = $_GET['search'] ?? '';
         $_id = Authentication::getUserSessionInfo('_id');
         $categories= $router->db->getUserCategories($_id);
@@ -70,9 +70,10 @@ class NewsController
         foreach ($user_categories as $category){
             $category= $category."'"; 
             $category= "'".$category;
-            $sql.="category = $category OR ";
+            $sql.="$category, ";
         }
-        $sql= substr_replace($sql,"",-4);
+        $sql= substr_replace($sql,"",-2);
+        $sql.= ")";
 
         $news= $router->db->getNewsForUser($sql,$search); //SELECT * FROM news WHERE {category = art OR category = art tech OR...... AND } isDeleted= 0 ORDER BY create_date DESC
 

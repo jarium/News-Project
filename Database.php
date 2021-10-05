@@ -89,10 +89,10 @@ class Database
     public function getNewsForUser($sql,$search="")
     {
         if ($search){
-            $statement = $this->pdo->prepare("SELECT * FROM news WHERE ".$sql." AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
+            $statement = $this->pdo->prepare("SELECT * FROM news WHERE category IN ".$sql." AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
             $statement->bindValue(':title',"%$search%");
         }else{
-            $statement = $this->pdo->prepare("SELECT * FROM news WHERE ".$sql." AND isDeleted = 0 ORDER BY create_date DESC"); //SELECT * FROM news WHERE {category = art OR category= tech OR......} AND isDeleted= 0 ORDER BY create_date DESC
+            $statement = $this->pdo->prepare("SELECT * FROM news WHERE category IN ".$sql." AND isDeleted = 0 ORDER BY create_date DESC"); //SELECT * FROM news WHERE {category = art OR category= tech OR......} AND isDeleted= 0 ORDER BY create_date DESC
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
