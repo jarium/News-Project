@@ -21,6 +21,8 @@ $router = new Router();
 $router ->get('/',[NewsController::class, 'index']); //News list
 $router ->get('/news',[NewsController::class, 'index']); //News list
 $router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
+$router->get('/news/api',[NewsController::class, 'apiAll']);
+$router->get('/news/api/one',[NewsController::class, 'apiOne']);
 
 //News type routes start
 $router ->get('/news/science',[NewsController::class,'viewNewsWithCategory']);

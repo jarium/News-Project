@@ -7,10 +7,29 @@ use app\Database;
 use app\models\News;
 use app\models\Comments;
 use app\Authentication;
-use app\Authorization;
 
 class NewsController
 {
+    public static function apiAll(Router $router)
+    {
+        $news=$router->db->getNews();
+        $news= json_encode($news,JSON_PRETTY_PRINT);
+
+        $router->renderView('api/index', [
+            'news' => $news,
+        ]);
+    }
+
+    public static function apiOne(Router $router)
+    {
+        $_id = $_GET['_id'] ?? '';
+        $news=$router->db->getNewsById($_id);
+        $news= json_encode($news,JSON_PRETTY_PRINT);
+        $router->renderView('api/index', [
+            'news' => $news,
+        ]);
+    }
+
     public static function index(Router $router)
     {
         $search = $_GET['search'] ?? '';
