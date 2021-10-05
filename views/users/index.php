@@ -37,12 +37,6 @@
  </table>
 
 <?php else: ?><p>You haven't commented on any news yet</p>
-    <?php endif;?>
-<?php
+    <?php endif; ?>
 
 
-
-
-
-
-//<a href="/news/spesific?_id=<?php echo $comment['news_id'] " button type="button" class="btn btn-primary">Show</a>

@@ -21,19 +21,33 @@ $router = new Router();
 $router ->get('/',[NewsController::class, 'index']); //News list
 $router ->get('/news',[NewsController::class, 'index']); //News list
 $router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
-$router ->get('/news/category',[NewsController::class,'viewNewsWithCategory']); //Kategoriye göre haberleri herkes görebilir
+
+//News type routes start
+$router ->get('/news/science',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/health',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/technology',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/world',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/economy',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/sports',[NewsController::class,'viewNewsWithCategory']);       // => type a göre news herkes erişebilir
+$router ->get('/news/art',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/education',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/social',[NewsController::class,'viewNewsWithCategory']);
+$router ->get('/news/political',[NewsController::class,'viewNewsWithCategory']);
+//News type routes end
+
 $router ->get('/about',[NewsController::class,'about']); //About sayfasına herkes erişebilir
 
 if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
     $router ->get('/users',[UserController::class, 'index']); //Giriş varsa user bilgileri(index)
     $router ->get('/users/logout',[UserController::class, 'logout']); //Giriş varsa logout hakkı olur
     $router ->post('/news/spesific',[NewsController::class,'viewSpesificNews']); //Habere yorum atmak (post) için giriş gerekir.
+    $router ->get('/news/forme',[NewsController::class,'viewNewsForUser']); //Kullanıcının seçtiği haber kategorilerine göre haberler
     
     if ($auth->getAuthLevel() > 1){ //1(Kullanıcı)'den büyük auth level, editör ve sonrası demek.
-        $router ->get('/news/create',[NewsController::class, 'create']); //Create news get (editor + only)
-        $router ->post('/news/create',[NewsController::class, 'create']); //Create news post (editor + only)
-        $router ->get('/news/update',[NewsController::class, 'update']); //Update news get(editor + only, max 2 gün geçmiş olmalı)
-        $router ->post('/news/update',[NewsController::class, 'update']); //Update news post(editor + only, max 2 gün geçmiş olmalı)
+        $router ->get('/news/create',[NewsController::class, 'create']); //Create news get 
+        $router ->post('/news/create',[NewsController::class, 'create']); //Create news post 
+        $router ->get('/news/update',[NewsController::class, 'update']); //Update news get
+        $router ->post('/news/update',[NewsController::class, 'update']); //Update news post
         $router ->post('/news/delete',[NewsController::class, 'delete']); //Delete news 
         //$router ->get('/panels/editor',); //Editör paneli
         //$router ->post('/panels/editor',); //Editör paneli

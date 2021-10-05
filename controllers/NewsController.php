@@ -6,6 +6,8 @@ use app\Router;
 use app\Database;
 use app\models\News;
 use app\models\Comments;
+use app\Authentication;
+use app\Authorization;
 
 class NewsController
 {
@@ -21,14 +23,47 @@ class NewsController
 
     public static function viewNewsWithCategory(Router $router)
     {
-        $search = $_GET['search'] ?? '';
-        $category = $_GET['type'] ?? '';
-        $news=$router->db->getNewsWithCategory($category,$search);
+        $search= $_GET['search'] ?? '';
+        $url= $_SERVER['PATH_INFO'];
+        $url= substr($url,6);
+        $news = $router->db->getNewsWithCategory($url,$search);
         $router->renderView('news/index', [
             'news' => $news,
             'search' => $search
         ]);
+        
     }
+    public static function viewNewsForUser(Router $router)
+    {
+        $sql= "";
+        $search = $_GET['search'] ?? '';
+        $_id = Authentication::getUserSessionInfo('_id');
+        $categories= $router->db->getUserCategories($_id);
+        $user_categories= [];
+        foreach($categories as $category){
+            foreach($category as $val => $v ){
+                if ($v == 1){
+                    $user_categories[]= $val;
+                }
+            }
+        }
+
+        foreach ($user_categories as $category){
+            $category= $category."'"; 
+            $category= "'".$category;
+            $sql.="category = $category OR ";
+        }
+        $sql= substr_replace($sql,"",-4);
+
+        $news= $router->db->getNewsForUser($sql,$search); //SELECT * FROM news WHERE {category = art OR category = art tech OR...... AND } isDeleted= 0 ORDER BY create_date DESC
+
+        $router->renderView('news/index', [
+            'news' => $news,
+            'search' => $search
+        ]);
+        
+    }
+
 
     public static function viewSpesificNews(Router $router)
     {

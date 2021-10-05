@@ -23,7 +23,7 @@ Class Router
    }
    public function resolve()
    {
-       $currentUrl = $_SERVER['PATH_INFO'] ?? '/'; //bakılacak
+       $currentUrl = $_SERVER['PATH_INFO'] ?? '/'; 
        $method= $_SERVER['REQUEST_METHOD'];
 
        if ($method === 'GET'){

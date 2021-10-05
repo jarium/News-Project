@@ -72,7 +72,7 @@ class Database
       return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getNewsWithCategory($category,$search)
+    public function getNewsWithCategory($category,$search="")
     {
         if ($search){
             $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title AND category = :category AND isDeleted = 0 ORDER BY create_date DESC');
@@ -81,6 +81,18 @@ class Database
         }else{
             $statement = $this->pdo->prepare('SELECT * FROM news WHERE category = :category AND isDeleted = 0 ORDER BY create_date DESC');
             $statement->bindValue(':category',$category);
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getNewsForUser($sql,$search="")
+    {
+        if ($search){
+            $statement = $this->pdo->prepare("SELECT * FROM news WHERE ".$sql." AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
+            $statement->bindValue(':title',"%$search%");
+        }else{
+            $statement = $this->pdo->prepare("SELECT * FROM news WHERE ".$sql." AND isDeleted = 0 ORDER BY create_date DESC"); //SELECT * FROM news WHERE {category = art OR category= tech OR......} AND isDeleted= 0 ORDER BY create_date DESC
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -158,6 +170,13 @@ class Database
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getUserCategories($_id)
+    {
+        $statement = $this->pdo->prepare("SELECT science, health, political, technology, world, economy, sports, art, education, social FROM users WHERE _id= ".$_id."");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function createUser(User $user)
     {
         $statement = $this->pdo->prepare("INSERT INTO users (username, firstname, lastname, email, password) 
@@ -167,6 +186,10 @@ class Database
         $statement->bindValue(':lastname', $user->lastname);
         $statement->bindValue(':email', $user->email);
         $statement->bindValue(':password', password_hash($user->password,PASSWORD_DEFAULT));
+        $statement->execute();
+    }
+    public function createCategoryForUser($_id){
+        $statement = $this->pdo->prepare("INSERT INTO user_categories (user_id) VALUES (".$_id.")");
         $statement->execute();
     }
 
