@@ -10,6 +10,7 @@
  <p> Author: <?= $news['author_username']?></p>
  <p> Category: <?= $news['category']?></p>
  <p> Created: <?= $news['create_date']?></p>
+ <?php if ($news['update_date']): ?> <p> Updated: <?= $news['update_date']; endif; ?></p>
 
 <!--Comments Section Start-->
 <h2 style="margin-top: 25px;">Comments (<?=$comments_count?>)</h2> <hr>

@@ -10,26 +10,6 @@ use app\Authentication;
 
 class NewsController
 {
-    public static function apiAll(Router $router)
-    {
-        $news=$router->db->getNews();
-        $news= json_encode($news,JSON_PRETTY_PRINT);
-
-        $router->renderView('api/index', [
-            'news' => $news,
-        ]);
-    }
-
-    public static function apiOne(Router $router)
-    {
-        $_id = $_GET['_id'] ?? '';
-        $news=$router->db->getNewsById($_id);
-        $news= json_encode($news,JSON_PRETTY_PRINT);
-        $router->renderView('api/index', [
-            'news' => $news,
-        ]);
-    }
-
     public static function index(Router $router)
     {
         $search = $_GET['search'] ?? '';
@@ -75,7 +55,7 @@ class NewsController
         $sql= substr_replace($sql,"",-2);
         $sql.= ")";
 
-        $news= $router->db->getNewsForUser($sql,$search); //SELECT * FROM news WHERE {category = art OR category = art tech OR...... AND } isDeleted= 0 ORDER BY create_date DESC
+        $news= $router->db->getNewsForUser($sql,$search);
 
         $router->renderView('news/index', [
             'news' => $news,
@@ -99,25 +79,8 @@ class NewsController
             header('Location: /news');
             exit;
         }
-        $newsData = [
-            '_id' => "",
-            'image' => "",
-            'title' => "",
-            'content' => "",
-            'author_username' => "",
-            'category' => "",
-            'create_date' => "",
-            'update_date' => "",
-        ];
-        $newsData['_id'] = $news['_id'];
-        $newsData['image']= $news['image'];
-        $newsData['title']= $news['title'];
-        $newsData['content']= $news['content'];
-        $newsData['author_username']= $news['author_username'];
-        $newsData['category']= $news['category'];
-        $newsData['create_date']= $news['create_date'];
-        $newsData['update_date']= $news['update_date'];
 
+        //Create comment 
         $comments = $db->getComments($_id);
         $errors = [];
         $commentData = [
@@ -127,8 +90,7 @@ class NewsController
             'comment' => "",
             'isAnon' => 0,
              ];
-
-         //Create comment    
+               
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $commentData['news_id']= $news['_id'];
             $commentData['newsTitle'] = $news['title'];
@@ -151,7 +113,7 @@ class NewsController
         $comments_count = $db->getCommentsCountByNewsId($_id);
         $comments_count ? $comments_count : 0;
         $router->renderView("news/spesific_news", [
-            'news' => $newsData,
+            'news' => $news,
             'comments' => $comments,
             'comments_count' => $comments_count,
             'add_comments' => $commentData,

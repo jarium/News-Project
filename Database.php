@@ -52,7 +52,7 @@ class Database
         }
     }
 
-    public function getNews($search="",$admin=false)
+    public function getNews($search="",$admin=false, $api=false)
     { if($admin){
         if ($search){
             $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title ORDER BY create_date DESC');
@@ -60,12 +60,15 @@ class Database
         } else {
             $statement= $this->pdo->prepare('SELECT * FROM news ORDER BY create_date DESC');
         }
+
+      }elseif($api){
+        $statement = $this->pdo->prepare('SELECT _id, title, content, author_username, category, create_date, update_date FROM news WHERE isDeleted = 0 ORDER BY create_date DESC');
       }else{
         if ($search){
-            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC');
+            $statement = $this->pdo->prepare('SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC');
             $statement-> bindValue(':title', "%$search%");
         }else {
-            $statement= $this->pdo->prepare('SELECT * FROM news WHERE isDeleted = 0 ORDER BY create_date DESC');
+            $statement= $this->pdo->prepare('SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE isDeleted = 0 ORDER BY create_date DESC');
         }
       }
       $statement-> execute();
@@ -75,11 +78,11 @@ class Database
     public function getNewsWithCategory($category,$search="")
     {
         if ($search){
-            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title AND category = :category AND isDeleted = 0 ORDER BY create_date DESC');
+            $statement = $this->pdo->prepare('SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE title LIKE :title AND category = :category AND isDeleted = 0 ORDER BY create_date DESC');
             $statement->bindValue(':category',$category);
             $statement->bindValue(':title',"%$search%");
         }else{
-            $statement = $this->pdo->prepare('SELECT * FROM news WHERE category = :category AND isDeleted = 0 ORDER BY create_date DESC');
+            $statement = $this->pdo->prepare('SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE category = :category AND isDeleted = 0 ORDER BY create_date DESC');
             $statement->bindValue(':category',$category);
         }
         $statement->execute();
@@ -89,21 +92,23 @@ class Database
     public function getNewsForUser($sql,$search="")
     {
         if ($search){
-            $statement = $this->pdo->prepare("SELECT * FROM news WHERE category IN ".$sql." AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
+            $statement = $this->pdo->prepare("SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE category IN ".$sql." AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
             $statement->bindValue(':title',"%$search%");
         }else{
-            $statement = $this->pdo->prepare("SELECT * FROM news WHERE category IN ".$sql." AND isDeleted = 0 ORDER BY create_date DESC"); //SELECT * FROM news WHERE {category = art OR category= tech OR......} AND isDeleted= 0 ORDER BY create_date DESC
+            $statement = $this->pdo->prepare("SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE category IN ".$sql." AND isDeleted = 0 ORDER BY create_date DESC"); //SELECT ... FROM news WHERE category IN {(science, world, health, .......)} AND isDeleted= 0 ORDER BY create_date DESC
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getNewsById($id,$admin=false)
+    public function getNewsById($id,$admin=false,$api=false)
     {
         if ($admin){
             $statement = $this->pdo->prepare('SELECT * FROM news WHERE _id= :id');
+        }elseif($api){
+            $statement = $this->pdo->prepare('SELECT _id, title, content, author_username, category, create_date, update_date FROM news WHERE _id= :id AND isDeleted = 0');
         }else{
-            $statement = $this->pdo->prepare('SELECT * FROM news WHERE _id= :id AND isDeleted = 0');
+            $statement = $this->pdo->prepare('SELECT _id, title, content, image, author_username, category, create_date, update_date FROM news WHERE _id= :id AND isDeleted = 0');
         }
         $statement->bindValue(':id',$id);
         $statement->execute();
@@ -177,19 +182,15 @@ class Database
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createUser(User $user)
+    public function createUser(User $user,$sql,$sql2)
     {
-        $statement = $this->pdo->prepare("INSERT INTO users (username, firstname, lastname, email, password) 
-        VALUES (:username, :firstname, :lastname, :email, :password)");
+        $statement = $this->pdo->prepare("INSERT INTO users (username, firstname, lastname, email, password".$sql.") 
+        VALUES (:username, :firstname, :lastname, :email, :password".$sql2.")");
         $statement->bindValue(':username', $user->username);
         $statement->bindValue(':firstname', $user->firstname);
         $statement->bindValue(':lastname', $user->lastname);
         $statement->bindValue(':email', $user->email);
         $statement->bindValue(':password', password_hash($user->password,PASSWORD_DEFAULT));
-        $statement->execute();
-    }
-    public function createCategoryForUser($_id){
-        $statement = $this->pdo->prepare("INSERT INTO user_categories (user_id) VALUES (".$_id.")");
         $statement->execute();
     }
 

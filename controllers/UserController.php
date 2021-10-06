@@ -33,8 +33,9 @@ class UserController
             'email' => "",
             'password' => "",
             'password_confirm' => "",
-
+            'categories' => []
         ];
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $userData['username'] = trim($_POST['username']);
             $userData['firstname'] = trim($_POST['firstname']);
@@ -42,6 +43,37 @@ class UserController
             $userData['email'] = trim($_POST['email']);
             $userData['password'] = $_POST['password'];
             $userData['password_confirm'] = $_POST['password_confirm'];
+            
+            if (isset($_POST['science'])){
+                $userData['categories'][]= 'science';
+            }
+            if (isset($_POST['health'])){
+                $userData['categories'][]= 'health';
+            }
+            if (isset($_POST['political'])){
+                $userData['categories'][]= 'political';
+            }
+            if (isset($_POST['technology'])){
+                $userData['categories'][]= 'technology';
+            }
+            if (isset($_POST['world'])){
+                $userData['categories'][]= 'world';
+            }
+            if (isset($_POST['economy'])){
+                $userData['categories'][]= 'economy';
+            }
+            if (isset($_POST['sports'])){
+                $userData['categories'][]= 'sports';
+            }
+            if (isset($_POST['art'])){
+                $userData['categories'][]= 'art';
+            }
+            if (isset($_POST['education'])){
+                $userData['categories'][]= 'education';
+            }
+            if (isset($_POST['social'])){
+                $userData['categories'][]= 'social';
+            }
 
             $user= new User();
             $user->load($userData);

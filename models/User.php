@@ -7,7 +7,7 @@ use app\Authentication;
 use app\helpers\UtilHelper;
 
 class User
-{
+{  
     public ?int $id = null;
     public ?string $role= null;
     public ?string $username= null;
@@ -16,6 +16,8 @@ class User
     public ?string $email= null;
     public ?string $password= null;
     public ?string $password_confirm= null;
+    public ?array $categories= null;
+
 
     public function load($data)
     {
@@ -27,6 +29,8 @@ class User
         $this -> email = $data['email'];
         $this->password= $data['password'];
         $this->password_confirm= $data['password_confirm'];
+        $this->categories = $data['categories'];
+        
     }
     public function loadLoginInfo($data)
     {
@@ -71,8 +75,14 @@ class User
             $errors[] = "Username is already taken, please register with another one";
         }
         if(empty($errors)){
-
-            $db->createUser($this);
+            $sql = "";
+            $sql2= "";
+            $val= '1';
+            foreach ($this->categories as $category){
+                $sql .=", $category"; // password, val1, val2... 
+                $sql2 .= ", $val";  
+            }
+            $db->createUser($this,$sql,$sql2);
         }  
 
         return $errors;

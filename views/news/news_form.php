@@ -12,7 +12,7 @@
         <img src="../<?php echo $news['image']?>" class="update-image">
     <?php endif; ?>
 
-    <div class="form-group">
+    <div style= "margin-top:10px;" class="form-group">
         <label>News Image</label>
         <input type="file" name="image">
     </div>
@@ -26,18 +26,18 @@
     </div>
     <div class="form-group">
       <label for="inputState">News Category</label>
-      <select id="inputState" name="category" value="<?= $news['category']?>" class="form-control">
-        <option selected>Category...</option>
-        <option>Science</option>
-        <option>Technology</option>
-        <option>Health</option>
-        <option>Political</option>
-        <option>World</option>
-        <option>Economy</option>
-        <option>Sports</option>
-        <option>Art</option>
-        <option>Education</option>
-        <option>Social</option>
+      <select id="inputState" name="category" class="form-control">
+        <option <?php if (!$news['category']):?>selected <?php endif ?>>Category...</option>
+        <option <?php if ($news['category'] == 'Science'):?>selected <?php endif ?>>Science</option>
+        <option <?php if ($news['category'] == 'Technology'):?>selected <?php endif ?>>Technology</option>
+        <option <?php if ($news['category'] == 'Health'):?>selected <?php endif ?>>Health</option>
+        <option <?php if ($news['category'] == 'Political'):?>selected <?php endif ?>>Political</option>
+        <option <?php if ($news['category'] == 'World'):?>selected <?php endif ?>>World</option>
+        <option <?php if ($news['category'] == 'Economy'):?>selected <?php endif ?>>Economy</option>
+        <option <?php if ($news['category'] == 'Sports'):?>selected <?php endif ?>>Sports</option>
+        <option <?php if ($news['category'] == 'Art'):?>selected <?php endif ?>>Art</option>
+        <option <?php if ($news['category'] == 'Education'):?>selected <?php endif ?>>Education</option>
+        <option <?php if ($news['category'] == 'Social'):?>selected <?php endif ?>>Social</option>
 
       </select>
     </div>
