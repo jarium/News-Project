@@ -4,7 +4,7 @@
      <div class="input-group mb-3">
          <input type="text" class="form-control"
                 placeholder="Search for <?= $viewTitle ?> News"
-                name="search" value="">
+                name="search" value="<?= $search ?>">
          <div class="input-group-append">
              <button class="btn btn-outline-secondary" type="submit">Search</button>
          </div>

@@ -194,7 +194,8 @@ class UserController
         $router->renderView('users/comments', [
             'comments' => $comments,
             'comments_count' => $comments_count,
-            'warning' => $warning
+            'warning' => $warning,
+            'search' => $search
         ]);
     }
 
