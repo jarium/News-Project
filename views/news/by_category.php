@@ -1,9 +1,9 @@
-<h1> News List </h1>
+<h1> <?= $viewTitle ?> News </h1>
 
  <form>
      <div class="input-group mb-3">
          <input type="text" class="form-control"
-                placeholder="Search for News"
+                placeholder="Search for <?= $viewTitle ?> News"
                 name="search" value="">
          <div class="input-group-append">
              <button class="btn btn-outline-secondary" type="submit">Search</button>

@@ -32,7 +32,7 @@
     <input type="password" class="form-control" name="password_confirm" placeholder="Password" required>
   </div>
   <div class="form-group">
-  <label>The News Categories You Are Interested In (Optional)</label><hr>
+  <label>The News Categories You Are Interested In (Optional, you can change this later)</label><hr>
   <div class="form-check form-check-inline">
   <input class="form-check-input" type="checkbox" name= "science" value="" id="flexCheckDefault" <?php if (in_array('science',$user['categories'])): ?> checked <?php endif; ?> >
   <label class="form-check-label" for="flexCheckDefault">

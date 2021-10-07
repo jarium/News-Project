@@ -26,16 +26,16 @@ class NewsController
         $url= $_SERVER['PATH_INFO'];
         $url= substr($url,6);
         $news = $router->db->getNewsWithCategory($url,$search);
-        $router->renderView('news/index', [
+        $viewTitle= ucfirst($url);
+        $router->renderView('news/by_category', [
             'news' => $news,
-            'search' => $search
+            'search' => $search,
+            'viewTitle' => $viewTitle
         ]);
         
     }
     public static function viewNewsForUser(Router $router)
     {
-        $sql= "(";
-        $search = $_GET['search'] ?? '';
         $_id = Authentication::getUserSessionInfo('_id');
         $categories= $router->db->getUserCategories($_id);
         $user_categories= [];
@@ -46,20 +46,31 @@ class NewsController
                 }
             }
         }
+        $warning = "";
+        if (!empty($user_categories)){
+            $sql= "(";
+            $search = $_GET['search'] ?? '';
 
-        foreach ($user_categories as $category){
-            $category= $category."'"; 
-            $category= "'".$category;
-            $sql.="$category, ";
+            foreach ($user_categories as $category){
+                $category= $category."'"; 
+                $category= "'".$category;
+                $sql.="$category, ";
+            }
+            $sql= substr_replace($sql,"",-2);
+            $sql.= ")";
+    
+            $news= $router->db->getNewsForUser($sql,$search);
+
+        }else{
+            $news= "";
+            $search = "";
+            $warning = "1";
         }
-        $sql= substr_replace($sql,"",-2);
-        $sql.= ")";
 
-        $news= $router->db->getNewsForUser($sql,$search);
-
-        $router->renderView('news/index', [
+        $router->renderView('news/for_user', [
             'news' => $news,
-            'search' => $search
+            'search' => $search,
+            'warning' => $warning
         ]);
         
     }
@@ -68,20 +79,27 @@ class NewsController
     public static function viewSpesificNews(Router $router)
     {
         $db= Database::$db;
-        $_id = $_GET['_id'] ?? null;
-        if (!$_id){
+        $news_id = $_GET['_id'] ?? null;
+        if (!$news_id){
             header('Location: /news');
             exit;
         }
-        $news= $db->getNewsById($_id);
+        $news= $db->getNewsById($news_id);
 
         if (!$news){
             header('Location: /news');
             exit;
         }
 
+        if (isset($_SESSION['_id'])){
+            $users_id= $_SESSION['_id'];
+            if (!$db->checkUserNewsRead($users_id,$news_id)){
+                $db->setUserNewsRead($users_id,$news_id);
+            }
+        }
+
         //Create comment 
-        $comments = $db->getComments($_id);
+        $comments = $db->getComments($news_id);
         $errors = [];
         $commentData = [
             'news_id' => "",
@@ -110,8 +128,7 @@ class NewsController
              }
         }//Create comment end
 
-        $comments_count = $db->getCommentsCountByNewsId($_id);
-        $comments_count ? $comments_count : 0;
+        $comments_count = count($comments);
         $router->renderView("news/spesific_news", [
             'news' => $news,
             'comments' => $comments,

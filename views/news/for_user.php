@@ -1,6 +1,14 @@
-<h1> News List </h1>
+<h1> News For You </h1>
 
- <form>
+<?php if ($warning): ?>
+<div style= "font-size:large;"class = "alert alert-warning">
+  You haven't selected any categories for your special news feed.
+  You can click the button to select your categories.
+</div>
+<a href="/users/category"> <div class="btn btn-info">Select Categories</div></a>
+
+<?php else: ?>
+    <form>
      <div class="input-group mb-3">
          <input type="text" class="form-control"
                 placeholder="Search for News"
@@ -35,3 +43,4 @@
     <?php endif;?>
     </tbody>
  </table>
+<?php endif; ?>

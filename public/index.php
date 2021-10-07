@@ -1,6 +1,8 @@
 <?php
 ob_start();
 session_start();
+date_default_timezone_set('Turkey');
+
 require_once __DIR__.'/../vendor/autoload.php';
 
 use app\Router;
@@ -42,9 +44,16 @@ $router ->get('/about',[NewsController::class,'about']); //About sayfasına herk
 
 if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
     $router ->get('/users',[UserController::class, 'index']); //Giriş varsa user bilgileri(index)
+    $router ->post('/users',[UserController::class, 'deleteUser']);// Kullanıcı hesap silme
     $router ->get('/users/logout',[UserController::class, 'logout']); //Giriş varsa logout hakkı olur
     $router ->post('/news/spesific',[NewsController::class,'viewSpesificNews']); //Habere yorum atmak (post) için giriş gerekir.
     $router ->get('/news/forme',[NewsController::class,'viewNewsForUser']); //Kullanıcının seçtiği haber kategorilerine göre haberler
+    $router ->get('/users/category',[UserController::class, 'updateUserCategories']); //Kullanıcı haber tercihleri düzenleme
+    $router ->post('/users/category',[UserController::class, 'updateUserCategories']); //Kullanıcı haber tercihleri düzenleme
+    $router ->get('/users/newsread',[UserController::class, 'getUserNewsRead']); //Kullanıcı okunan haberleri görme
+    $router ->get('/users/comments',[UserController::class, 'getUserComments']); //Kullanıcı yorumları görme
+    
+
     
     if ($auth->getAuthLevel() > 1){ //1(Kullanıcı)'den büyük auth level, editör ve sonrası demek.
         $router ->get('/news/create',[NewsController::class, 'create']); //Create news get 

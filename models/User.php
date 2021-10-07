@@ -16,13 +16,13 @@ class User
     public ?string $email= null;
     public ?string $password= null;
     public ?string $password_confirm= null;
-    public ?array $categories= null;
+    public mixed $categories;
 
 
     public function load($data)
     {
         $this->id= $data['_id'] ?? null;
-        $this->id= $data['role'] ?? null;
+        $this->role= $data['role'] ?? null;
         $this->username = $data['username'];
         $this->firstname= $data['firstname'];
         $this-> lastname = $data['lastname'];
@@ -38,6 +38,11 @@ class User
         $this->password= $data['password'];
     }
 
+    public function loadCategoryInfo($_id,$data)
+    {
+        $this->id= $_id;
+        $this->categories = $data;
+    }
 
     public function save()
     {
@@ -88,6 +93,26 @@ class User
         return $errors;
 
     }
+
+    public function updateCategories()
+    {
+        $db = Database::$db;
+        $categoryNames= ['science','health','political','technology','world','economy','sports','art','education','social'];
+        $newCategories= $this->categories;
+        
+        $oldCategories= array_diff($categoryNames,$newCategories);
+
+        $sql = "";
+        foreach ($oldCategories as $oldCategory){
+            $sql .="$oldCategory = '0', ";
+        }
+        foreach ($newCategories as $newCategory){
+            $sql .="$newCategory = '1', ";
+        }      
+        $sql = substr_replace($sql,"",-2);
+        $db->updateUserCategories($this->id, $sql);
+    }
+
     public function saveLoginInfo()
     {
         $db = Database::$db;

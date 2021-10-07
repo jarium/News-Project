@@ -114,6 +114,29 @@ class Database
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
+    public function setUserNewsRead($user_id, $news_id)
+    {
+        $statement= $this->pdo->prepare("INSERT INTO users_read_news (users_id, news_id) VALUES (".$user_id.", ".$news_id.")");
+        $statement->execute();
+    }
+    public function checkUserNewsRead($user_id, $news_id)
+    {
+        $statement= $this->pdo->prepare("SELECT _id FROM users_read_news WHERE users_id = ".$user_id." AND news_id = ".$news_id."");
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserNewsRead($users_id, $search="")
+    {
+        if ($search){
+            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM news LEFT JOIN users_read_news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.title LIKE :title AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
+            $statement->bindValue(':title',"%$search%");
+        }else{
+            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM news LEFT JOIN users_read_news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     public function createNews(News $news)
     {
@@ -182,6 +205,12 @@ class Database
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function updateUserCategories($_id,$sql)
+    {
+        $statement = $this->pdo->prepare("UPDATE users SET ".$sql." WHERE _id = ".$_id."");
+        $statement->execute();
+    }
+
     public function createUser(User $user,$sql,$sql2)
     {
         $statement = $this->pdo->prepare("INSERT INTO users (username, firstname, lastname, email, password".$sql.") 
@@ -194,14 +223,23 @@ class Database
         $statement->execute();
     }
 
-    public function deleteUser($id,$soft=false)
+    public function deleteUser($_id,$soft=false)
     {
         if ($soft == true){
-            $this->setData('users','isDeleted',1,$id);
-        }else{
-            $statement = $this->pdo->prepare("DELETE FROM users WHERE _id= :id");
-            $statement->bindValue(':id',$id);
+
+            $statement= $this->pdo->prepare("UPDATE users SET delete_date = :date, isDeleted = 1 WHERE _id= :id");
+            $statement2= $this->pdo->prepare("UPDATE comments SET delete_date = :date, isDeleted = 1 WHERE commenter_id= :id");
+            $statement->bindValue(':id', $_id);
+            $statement->bindValue(':date', date('Y-m-d H:i:s'));
+            $statement2->bindValue(':date', date('Y-m-d H:i:s'));
+            $statement2->bindValue(':id', $_id);
             $statement->execute();
+            $statement2->execute();
+        }else{
+            $statement = $this->pdo->prepare("DELETE FROM users WHERE _id= ".$_id."");
+            $statement2= $this->pdo->prepare("DELETE FROM comments WHERE commenter_id = ".$_id."");
+            $statement->execute();
+            $statement2->execute();
         }
     }
 
@@ -217,33 +255,14 @@ class Database
     }
     public function getCommentsByUserId($_id,$search="")
     {
-        if ($search){
-            $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id." AND comment LIKE :comment ORDER BY create_date DESC");
+        if ($search){ 
+            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM news LEFT JOIN comments ON news._id = comments.news_id WHERE comments.commenter_id = $_id AND comments.comment LIKE :comment ORDER BY comments.create_date DESC");
             $statement-> bindValue(':comment', "%$search%");
         }else{
-            $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id." ORDER BY create_date DESC");
+            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM news LEFT JOIN comments ON news._id = comments.news_id WHERE comments.commenter_id = $_id ORDER BY comments.create_date DESC");
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getCommentsCountByUserId($_id)
-    {
-        $statement= $this->pdo->prepare("SELECT * FROM comments WHERE commenter_id = ".$_id."");
-        $statement->execute();
-        $statement->fetchAll(PDO::FETCH_ASSOC);
-        $count = $statement->rowCount();
-        return $count;
-    }
-
-    public function getCommentsCountByNewsId($_id)
-    {
-        $statement= $this->pdo->prepare("SELECT * FROM comments WHERE news_id = :news_id");
-        $statement->bindValue(':news_id',$_id);
-        $statement->execute();
-        $statement->fetchAll(PDO::FETCH_ASSOC);
-        $count = $statement->rowCount();
-        return $count;
     }
 
     public function createComment(Comments $comments)
@@ -261,14 +280,19 @@ class Database
 
     public function loginCheck($username,$password)
     {
-        $hashed_pass= $this->getData('users','username',$username,'password');
-        $verify= password_verify($password,$hashed_pass);
-
-        if ($verify == true) {
-            return true;
-        } 
-        else {
+        $isDeleted= $this->getData('users','username',$username,'isDeleted');
+        if ($isDeleted){
             return false;
+        }else{
+            $hashed_pass= $this->getData('users','username',$username,'password');
+            $verify= password_verify($password,$hashed_pass);
+
+            if ($verify == true) {
+                return true;
+            } 
+            else {
+                return false;
+            }
         }
     }
     public function promoteUserById($_id,$role){//admin/mod
