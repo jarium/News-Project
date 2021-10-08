@@ -197,6 +197,21 @@ class Database
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
+    public function getUsersByIdRole($id,$role)
+    {
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role = :role");
+        $statement->bindValue(':id',$id);
+        $statement->bindValue(':role',$role);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+    public function getUsersEditorsById($id)
+    {
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role IN ('editor', 'user')");
+        $statement->bindValue(':id',$id);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
 
     public function getUserCategories($_id)
     {
@@ -209,6 +224,22 @@ class Database
     {
         $statement = $this->pdo->prepare("UPDATE users SET ".$sql." WHERE _id = ".$_id."");
         $statement->execute();
+    }
+
+    public function getEditorCategories($_id)
+    {
+        $statement = $this->pdo->prepare("SELECT science, health, political, technology, world, economy, sports, art, education, social FROM editor_categories WHERE editor_id = :id");
+        $statement->bindValue(':id',$_id);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateEditorCategories($_id,$sql)
+    {
+        $statement = $this->pdo->prepare("UPDATE editor_categories SET ".$sql." WHERE editor_id = :id");
+        $statement->bindValue(':id',$_id);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function createUser(User $user,$sql,$sql2)
@@ -295,12 +326,30 @@ class Database
             }
         }
     }
-    public function promoteUserById($_id,$role){//admin/mod
-        if ($role == 'editor'){
-            $statement= $this->pdo->prepare("INSERT INTO editor_categories (editor_id) VALUES $_id");
+    public function setEditorById($_id,$role,$promote=true,$username="")
+    {
+        if ($promote){
+            $statement= $this->pdo->prepare("INSERT INTO editor_categories (editor_id, editor_username) VALUES (:id, :username)");
+            $statement->bindValue(':id', $_id);
+            $statement->bindValue(':username', $username);
+            $statement->execute();
+        }else{
+            $statement= $this->pdo->prepare('DELETE FROM editor_categories WHERE editor_id = :id');
+            $statement->bindValue(':id', $_id);
             $statement->execute();
         }
-        $this->setData('users','role',$role,$_id);
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
+            $statement->bindValue(':id', $_id);
+            $statement->bindValue(':role', $role);
+            $statement->execute();
+
     }
+    public function setUserRoleById($_id,$role){//admin/mod
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
+        $statement->bindValue(':id', $_id);
+        $statement->bindValue(':role', $role);
+        $statement->execute();
+    }    
+    
 
 }

@@ -5,14 +5,12 @@ namespace app\controllers;
 use app\Router;
 use app\models\User;
 use app\Authentication;
-use app\Authorization;
 
 class UserController
 {
     public static function index(Router $router)
     {
         $_id= Authentication::getUserSessionInfo('_id');
-        $search = $_GET['search'] ?? '';
         $user=$router->db->getUsersById($_id);
         
 
@@ -229,7 +227,13 @@ class UserController
         }
         
     }
-    
 
+
+    //Admin
+    public static function adminIndex(Router $router){
+        $router->renderView('panels/admin/index', [
+        ]);
+        
+    }
 
 }

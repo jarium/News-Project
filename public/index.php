@@ -9,6 +9,9 @@ use app\Router;
 use app\controllers\NewsController;
 use app\controllers\ApiController;
 use app\controllers\UserController;
+use app\controllers\EditorController;
+use app\controllers\ModController;
+use app\controllers\AdminController;
 use app\Authorization;
 
 $auth = new Authorization;
@@ -24,8 +27,7 @@ $router = new Router();
 $router ->get('/',[NewsController::class, 'index']); //News list
 $router ->get('/news',[NewsController::class, 'index']); //News list
 $router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
-$router->get('/news/api',[ApiController::class, 'apiAll']);
-$router->get('/news/api/one',[ApiController::class, 'apiOne']);
+$router->get('/api/news',[ApiController::class, 'api']);
 
 //News type routes start
 $router ->get('/news/science',[NewsController::class,'viewNewsWithCategory']);
@@ -56,21 +58,21 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
 
     
     if ($auth->getAuthLevel() > 1){ //1(Kullanıcı)'den büyük auth level, editör ve sonrası demek.
-        $router ->get('/news/create',[NewsController::class, 'create']); //Create news get 
-        $router ->post('/news/create',[NewsController::class, 'create']); //Create news post 
-        $router ->get('/news/update',[NewsController::class, 'update']); //Update news get
-        $router ->post('/news/update',[NewsController::class, 'update']); //Update news post
-        $router ->post('/news/delete',[NewsController::class, 'delete']); //Delete news 
-        //$router ->get('/panels/editor',); //Editör paneli
-        //$router ->post('/panels/editor',); //Editör paneli
+        $router ->get('/editor',[EditorController::class, 'index']);
+        $router ->get('/editor/createnews',[NewsController::class, 'editorCreate']);
+        $router ->post('/editor/createnews',[NewsController::class, 'editorCreate']); 
+        $router ->get('/editor/updatenews',[NewsController::class, 'editorUpdate']);
+        $router ->post('/editor/updatenews',[NewsController::class, 'editorUpdate']);
     }
-    elseif ($auth->getAuthLevel() > 2){ //2(Editör)'den büyük auth level, mod ve sonrası demek.
-        //$router ->get('/panels/mod',); //Mod paneli
-        //$router ->post('/panels/mod',); //Mod paneli
+    if ($auth->getAuthLevel() > 2){ //2(Editör)'den büyük auth level, mod ve sonrası demek.
+        $router ->get('/mod',[ModController::class, 'index']); //Mod paneli
+        $router ->get('/mod/editorcategory',[ModController::class, 'updateEditorCategories']);
+        $router ->post('/mod/editorcategory',[ModController::class, 'updateEditorCategories']);
+        $router ->get('/mod/promote',[ModController::class, 'promote']);
+        $router ->post('/mod/promote',[ModController::class, 'promote']);
     }
-    elseif ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
-        //$router ->get('/panels/admin',); //Admin paneli
-        //$router ->post('panels/admin',); //Admin paneli
+    if ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
+        $router ->get('/admin',[UserController::class, 'adminIndex']); //Admin paneli
     }
 
 }else{//Giriş yapmayan kullanıcılar için route lar
