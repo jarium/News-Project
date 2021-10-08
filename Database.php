@@ -213,6 +213,19 @@ class Database
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getAllEditorUsers($search="")
+    {
+        if ($search){
+            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND username LIKE :username OR role LIKE :role");
+            $statement->bindValue(':username',"%$search%");
+            $statement->bindValue(':role',"%$search%");
+        }else{
+            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user')");
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getUserCategories($_id)
     {
         $statement = $this->pdo->prepare("SELECT science, health, political, technology, world, economy, sports, art, education, social FROM users WHERE _id= ".$_id."");

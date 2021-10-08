@@ -3,6 +3,7 @@
 </p>
 
 <h1> Update Editor's Categories</h1> <br>
+
 <form>
      <div class="input-group mb-3">
          <input type="text" class="form-control"
@@ -15,6 +16,10 @@
  </form>
 
 <?php if ($editor): ?>
+
+<?php if($success): ?>
+  <div class="alert alert-success">Editor's Categories Updated</div>
+<?php endif; ?>
 
 <h3> Editor: <?= $editor['username'] ?></h3> <hr>
 

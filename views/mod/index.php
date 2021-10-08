@@ -1,5 +1,8 @@
 <h1>Mod Panel</h1> <hr> <br> <br>
 
+<h2> Search Users <a href="mod/showusers"><div class="btn btn-info">Show</div> </a></h2>
+<p style="font-size:large;">You can search users for informations like user id, or to promote/demote.</p> <hr> <br> <br>
+
 <h2> Promote/Demote <a href="mod/promote"><div class="btn btn-info">Promote</div> </a></h2>
 <p style="font-size:large;">You can promote users to editors or demote editors to users.</p> <hr> <br> <br>
 

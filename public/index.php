@@ -70,6 +70,7 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->post('/mod/editorcategory',[ModController::class, 'updateEditorCategories']);
         $router ->get('/mod/promote',[ModController::class, 'promote']);
         $router ->post('/mod/promote',[ModController::class, 'promote']);
+        $router ->get('/mod/showusers',[ModController::class, 'usersAndEditors']);
     }
     if ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
         $router ->get('/admin',[UserController::class, 'adminIndex']); //Admin paneli

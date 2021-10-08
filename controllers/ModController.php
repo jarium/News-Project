@@ -123,8 +123,6 @@ class ModController
                     header("refresh:0");
                 }
             }
-            
-            
         }
         $router->renderView('mod/promote_user', [
             'id' => $_id,
@@ -132,5 +130,15 @@ class ModController
             'warning' => $warning
         ]);
 
+    }
+    public static function usersAndEditors(Router $router)
+    {
+        $search = $_GET['search'] ?? "";
+        $users = $router->db->getAllEditorUsers($search);
+
+        $router->renderView('mod/users', [
+            'users' => $users,
+            'search' => $search
+        ]);
     }
 }
