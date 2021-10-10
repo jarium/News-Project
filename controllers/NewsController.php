@@ -7,6 +7,7 @@ use app\Database;
 use app\models\News;
 use app\models\Comments;
 use app\Authentication;
+use DateTime;
 
 class NewsController
 {
@@ -139,8 +140,9 @@ class NewsController
         ]);
     }
 
-    public static function create(Router $router) //Editor +
+    public static function create(Router $router) //Admin,Mod
     {
+        $success = 0;
         $errors = [];
         $newsData = [
             'title' => "",
@@ -163,21 +165,30 @@ class NewsController
             $news->load($newsData);
             $errors= $news->save();
             if (empty($errors)){
-                header('Location: /news');
-                exit;
+                $success= 1;
+                $newsData = [
+                    'title' => "",
+                    'author' => "",
+                    'author_id' => "",
+                    'content' => "",
+                    'image' => "",
+                    'category' => "",
+                ];
             }
 
         }
         $router->renderView('news/create', [
             'news' => $newsData,
-            'errors' => $errors
+            'errors' => $errors,
+            'success' => $success
         ]);
     }
 
-    public static function update(Router $router) //Editor/Mod/Admin
+    public static function update(Router $router) ///Mod/Admin
     {
         $id = $_GET['_id'] ?? null;
         $warning = 0;
+        $success = 0;
         $errors= [];
         $newsData = $router->db->getNewsById($id,true);
 
@@ -207,8 +218,8 @@ class NewsController
             }
 
             if (empty($errors)){
-                header('refresh:0');
-                exit;
+                $success = 1;
+                $newsData = $router->db->getNewsById($id,true);
             }
         }
 
@@ -216,20 +227,9 @@ class NewsController
             'news' => $newsData,
             'errors' => $errors,
             'id' => $id,
-            'warning' => $warning
+            'warning' => $warning,
+            'success' => $success
         ]);
-    }
-
-    public static function delete(Router $router)
-    {
-        $id = $_POST['_id'] ?? null;
-        if (!$id){
-            header('Location: /news');
-            exit;
-        } 
-        $router->db->deleteNews($id);
-        header('Location: /news');
-        exit;
     }
 
     public static function about(Router $router)
@@ -243,7 +243,7 @@ class NewsController
         $success = 0;
         $editor_categories = $router->db->getEditorCategories($_id);
         $categories= [];
-        $categories[]= 'Category...';
+
         
         foreach ($editor_categories as $data){
             foreach ($data as $key => $val){
@@ -274,10 +274,16 @@ class NewsController
             $news= new News();
             $news->load($newsData);
             $errors= $news->save($categories);
-            $success = 1;
             if (empty($errors)){
-                header('refresh:0');
-                exit;
+                $success= 1;
+                $newsData = [
+                    'title' => "",
+                    'author' => "",
+                    'author_id' => "",
+                    'content' => "",
+                    'image' => "",
+                    'category' => "",
+                ];
             }
 
         }
@@ -290,6 +296,71 @@ class NewsController
     }
     public static function editorUpdate(Router $router)
     {
+        $editor_id= Authentication::getUserSessionInfo('_id');
+        $editor_categories = $router->db->getEditorCategories($editor_id);
 
+        $categories= [];
+
+        
+        foreach ($editor_categories as $data){
+            foreach ($data as $key => $val){
+                if ($val == 1){
+                    $categories[]= ucfirst($key);
+                }
+            }
+        }
+
+        $news_id = $_GET['_id'] ?? null;
+        $warning = 0;
+        $success = 0;
+        $timeout = 0;
+        $errors= [];
+        
+        $newsData = $router->db->getEditorNewsById($editor_id,$news_id);
+
+        if (!$news_id){
+            $warning = 1;
+        }
+
+        if ($newsData){
+            
+            $datetime1 = new DateTime();
+            $datetime2 = new DateTime($newsData['create_date']);
+            $interval = $datetime1->diff($datetime2);
+            $year = $interval->format('%y');
+            $month= $interval->format('%m');
+            $day= $interval->format('%d');
+
+            if ($year >= 1 || $month >= 1 || $day >= 1){
+                $timeout = 1;
+            }else{
+                if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+                    $newsData['title'] = $_POST['title'];
+                    $newsData['content'] = $_POST['content'];
+                    $newsData['author'] = $_SESSION['username'];
+                    $newsData['author_id'] = $_SESSION['_id'];
+                    $newsData['imageFile'] = $_FILES['image'];
+                    $newsData['category'] = $_POST['category'];
+                
+                    $news = new News();
+                    $news->load($newsData);
+                    $errors= $news->save($categories);
+
+                    if (empty($errors)){
+                        $success = 1;
+                        $newsData = $router->db->getEditorNewsById($editor_id,$news_id);
+                    }
+                }
+            }
+        }
+        $router->renderView('editor/update_news', [
+            'id' => $news_id,
+            'news' => $newsData,
+            'errors' => $errors,
+            'success' => $success,
+            'categories' => $categories,
+            'warning' => $warning,
+            'timeout' => $timeout
+        ]);
     }
 }

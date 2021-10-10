@@ -7,4 +7,4 @@
 <p style="font-size:large;">You can review and get info from the news you created.</p> <hr> <br> <br>
 
 <h2> Update My News <a href="editor/updatenews"><div class="btn btn-info">Update</div> </a></h2>
-<p style="font-size:large;">You can update your news in 24 hours after you create it.</p> <hr> <br> <br>
+<p style="font-size:large;">You can update your news for the first 24 hours after you create them.</p> <hr> <br> <br>

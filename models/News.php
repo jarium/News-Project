@@ -47,7 +47,7 @@ class News
             $errors[] = 'Category for the news is required';
         }
         if ($editorCategories){
-            if (!in_array($this->category,$editorCategories)){
+            if (!in_array($this->category,$editorCategories) && $this->category != 'Category...'){
                 $errors[]= "You don't have permission to post news with the selected category."; 
             }
         }
