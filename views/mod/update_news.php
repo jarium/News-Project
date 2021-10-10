@@ -2,6 +2,10 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
+<p>
+    <a href="/mod/news" class="btn btn-info">Go back to Search News</a>
+</p>
+
 <h1> Update/Delete News </h1> <br>
 <form>
      <div class="input-group mb-3">

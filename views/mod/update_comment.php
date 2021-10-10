@@ -2,6 +2,10 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
+<p>
+    <a href="/mod/comments" class="btn btn-info">Go back to Search Comments</a>
+</p>
+
 <h1> Update/Delete Comments </h1> <br>
 <form>
      <div class="input-group mb-3">
