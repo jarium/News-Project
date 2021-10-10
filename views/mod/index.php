@@ -25,5 +25,5 @@
 <h2> Search/Manage News <a href="/mod/news"><div class="btn btn-info">Check</div> </a></h2>
 <p style="font-size:large;">You can review news info to delete/update news.</p> <hr> <br> <br>
 
-<h2> Update/Delete Comments <a href="/mod/editnews"><div class="btn btn-info">Check</div> </a></h2>
+<h2> Update/Delete News <a href="/mod/editnews"><div class="btn btn-info">Check</div> </a></h2>
 <p style="font-size:large;">You can update/delete/restore news.</p> <hr> <br> <br>

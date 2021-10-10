@@ -445,7 +445,6 @@ class Database
         if ($search){
             $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND username LIKE :username AND isDeleted = 1 ORDER BY delete_date DESC");
             $statement->bindValue(':username', "%$search%");
-            $statement->bindValue(':role', "%$search%");
         }else{
             $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND isDeleted = 1 ORDER BY delete_date DESC");
         }

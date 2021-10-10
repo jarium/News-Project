@@ -2,6 +2,10 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
+<p>
+    <a href="/mod/showusers" class="btn btn-info">Go back to Search Users/Editors</a>
+</p>
+
 <h1> Promote/Demote</h1> <br>
 <form>
      <div class="input-group mb-3">
