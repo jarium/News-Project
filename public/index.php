@@ -81,11 +81,16 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->post('/mod/editnews',[NewsController::class, 'update']);
         $router ->get('/mod/createnews',[NewsController::class, 'create']);
         $router ->post('/mod/createnews',[NewsController::class, 'create']);
+        $router ->get('/mod/activities',[ModController::class, 'activities']);
 
 
     }
     if ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
-        $router ->get('/admin',[UserController::class, 'adminIndex']); //Admin paneli
+        $router ->get('/admin',[AdminController::class, 'index']); //Admin paneli
+        $router ->get('/admin/promote',[AdminController::class, 'promote']);
+        $router ->post('/admin/promote',[AdminController::class, 'promote']);
+        $router ->get('/admin/activities',[AdminController::class, 'activities']);
+        $router ->get('/admin/users',[AdminController::class, 'users']);
     }
 
 }else{//Giriş yapmayan kullanıcılar için route lar

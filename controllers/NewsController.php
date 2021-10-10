@@ -199,7 +199,8 @@ class NewsController
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             if (isset($_POST['delete'])){
                 if (!$newsData['isDeleted']){
-                    $router->db->deleteNews($id,true);
+                    $date = date('Y-m-d H:i:s');
+                    $router->db->deleteNews($id,$date,true);
                 }
             }elseif(isset($_POST['restore'])){
                 if ($newsData['isDeleted']){

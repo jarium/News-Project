@@ -2,7 +2,7 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
-<h2><a href = "/users/comments" >Total Comments (<?=$comments_count;?>) </a></h2> <hr>
+<h2><a href = "/mod/comments" >Total Comments (<?=$comments_count;?>) </a></h2> <hr>
 
     <form>
      <div class="input-group mb-3">

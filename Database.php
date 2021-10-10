@@ -176,11 +176,11 @@ class Database
         $statement->execute();
     }
 
-    public function deleteNews($_id,$soft=true)
+    public function deleteNews($_id,$date,$soft=true)
     {   if ($soft == true){
             $statement = $this->pdo->prepare("UPDATE news SET isDeleted = 1, delete_date = :date WHERE _id = :id");
             $statement->bindValue(':id',$_id);
-            $statement->bindValue(':date',date('Y-m-d H:i:s'));    
+            $statement->bindValue(':date',$date);    
             $statement->execute();
         }else{
             $statement = $this->pdo->prepare('DELETE FROM news WHERE _id= :id');
@@ -213,10 +213,10 @@ class Database
     public function getUsers($search="") //Admin
     {
         if ($search){
-            $statement = $this->pdo->prepare('SELECT * FROM users WHERE username LIKE :username ORDER BY create_date DESC');
+            $statement = $this->pdo->prepare('SELECT * FROM users WHERE username LIKE :username AND isDeleted = 0 ORDER BY create_date DESC');
             $statement-> bindValue(':username', "%$search%");
         } else {
-            $statement= $this->pdo->prepare('SELECT * FROM users ORDER BY create_date DESC');
+            $statement= $this->pdo->prepare('SELECT * FROM users WHERE isDeleted = 0 ORDER BY create_date DESC');
         }
         $statement-> execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -434,8 +434,8 @@ class Database
             $statement->execute();
 
     }
-    public function setUserRoleById($_id,$role){//admin/mod
-        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id AND isDeleted = 0");
+    public function setUserRoleById($_id,$role){//admin
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
         $statement->bindValue(':id', $_id);
         $statement->bindValue(':role', $role);
         $statement->execute();
@@ -443,14 +443,13 @@ class Database
     public function getDeletedUsers($search="")
     {
         if ($search){
-            $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND username LIKE :username AND isDeleted = 1 ORDER BY delete_date DESC");
+            $statement= $this->pdo->prepare("SELECT * FROM users WHERE username LIKE :username AND isDeleted = 1 ORDER BY delete_date DESC");
             $statement->bindValue(':username', "%$search%");
         }else{
-            $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND isDeleted = 1 ORDER BY delete_date DESC");
+            $statement= $this->pdo->prepare("SELECT * FROM users WHERE isDeleted = 1 ORDER BY delete_date DESC");
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
-    }    
+    }
     
-
 }

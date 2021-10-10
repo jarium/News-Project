@@ -152,10 +152,11 @@ class ModController
     {
         $search = $_GET['search'] ?? "";
         $users = $router->db->getAllEditorUsers($search);
-
+        $count = count($router->db->getAllEditorUsers());
         $router->renderView('mod/users', [
             'users' => $users,
-            'search' => $search
+            'search' => $search,
+            'count' => $count
         ]);
     }
 
@@ -232,5 +233,10 @@ class ModController
             'search' => $search
         ]);
 
+    }
+    public static function activities (Router $router)
+    {
+        $router->renderView('mod/activities', [
+        ]);
     }
 }

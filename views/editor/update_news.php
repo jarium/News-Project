@@ -2,6 +2,10 @@
     <a href="/editor" class="btn btn-info">Go back to Editor Panel</a>
 </p>
 
+<p>
+    <a href="/editor/mynews" class="btn btn-info">Go back to My News</a>
+</p>
+
 <h1> Update My News </h1> <br>
 <form>
      <div class="input-group mb-3">

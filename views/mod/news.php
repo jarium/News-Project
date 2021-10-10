@@ -42,7 +42,7 @@
            <td><?= $new['author_username'] ?></td>
            <td><?= $new['author_id'] ?></td>
            <td><?= $new['isDeleted'] ? "Yes" : "No";?></td>
-           <td><?php $new['delete_date'] ?></td>
+           <td><?= $new['delete_date'] ?></td>
            <td>
                <a href="/mod/editnews?_id=<?php echo $new['_id'] ?>" button type="button" class="btn btn-primary">Update/Delete</a>
            </td>
