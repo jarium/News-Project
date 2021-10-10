@@ -16,8 +16,14 @@
 <h2> Watch Activities <a href="mod/activity"><div class="btn btn-info">Check</div> </a></h2>
 <p style="font-size:large;">You can watch activities of users and editors.</p> <hr> <br> <br>
 
-<h2> Manage Comments <a href="mod/comments"><div class="btn btn-info">Check</div> </a></h2>
-<p style="font-size:large;">You can review and delete comments.</p> <hr> <br> <br>
+<h2> Search/Manage Comments <a href="mod/comments"><div class="btn btn-info">Check</div> </a></h2>
+<p style="font-size:large;">You can review comments info to delete/update comments.</p> <hr> <br> <br>
 
-<h2> Manage News <a href="mod/managenews"><div class="btn btn-info">Check</div> </a></h2>
-<p style="font-size:large;">You can review, update, delete and allow posting.</p> <hr> <br> <br>
+<h2> Update/Delete Comments <a href="mod/editcomment"><div class="btn btn-info">Update</div> </a></h2>
+<p style="font-size:large;">You can update/delete/restore comments.</p> <hr> <br> <br>
+
+<h2> Search/Manage News <a href="/mod/news"><div class="btn btn-info">Check</div> </a></h2>
+<p style="font-size:large;">You can review news info to delete/update news.</p> <hr> <br> <br>
+
+<h2> Update/Delete Comments <a href="/mod/editnews"><div class="btn btn-info">Check</div> </a></h2>
+<p style="font-size:large;">You can update/delete/restore news.</p> <hr> <br> <br>

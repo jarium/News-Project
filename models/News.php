@@ -31,7 +31,7 @@ class News
         $this-> category= $data['category'];
     }
 
-    public function save()
+    public function save($editorCategories=[])
     {
         $errors = [];
         if (!$this->title){
@@ -45,6 +45,11 @@ class News
         }
         if ($this->category == 'Category...'){
             $errors[] = 'Category for the news is required';
+        }
+        if ($editorCategories){
+            if (!in_array($this->category,$editorCategories)){
+                $errors[]= "You don't have permission to post news with the selected category."; 
+            }
         }
 
         if (!is_dir(__DIR__.'/../public/images')){

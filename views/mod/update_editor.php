@@ -88,7 +88,7 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <?php elseif (!$warning): ?>
-  <div style="font-size:large"class="alert alert-warning">No Editors Found Matching The Id, You can check the Id of Users/Editors <a href ="/mod/checkid">Here </a></div>
+  <div style="font-size:large"class="alert alert-warning">No Editors Found Matching The Id, You can check the Id of Users/Editors <a href ="/mod/showusers">Here </a></div>
 <?php endif; ?>
 </body>
 </html>

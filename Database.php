@@ -55,8 +55,10 @@ class Database
     public function getNews($search="",$admin=false, $api=false)
     { if($admin){
         if ($search){
-            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title ORDER BY create_date DESC');
+            $statement = $this->pdo->prepare('SELECT * FROM news WHERE title LIKE :title OR category LIKE :category OR author_username LIKE :author ORDER BY create_date DESC');
             $statement-> bindValue(':title', "%$search%");
+            $statement-> bindValue(':author', "%$search%");
+            $statement-> bindValue(':category', "%$search%");
         } else {
             $statement= $this->pdo->prepare('SELECT * FROM news ORDER BY create_date DESC');
         }
@@ -129,11 +131,24 @@ class Database
     public function getUserNewsRead($users_id, $search="")
     {
         if ($search){
-            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM news LEFT JOIN users_read_news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.title LIKE :title AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
+            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM users_read_news LEFT JOIN news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.title LIKE :title AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
             $statement->bindValue(':title',"%$search%");
         }else{
-            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM news LEFT JOIN users_read_news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
+            $statement = $this->pdo->prepare("SELECT news.title, news._id, users_read_news.read_date FROM users_read_news LEFT JOIN news ON news._id = users_read_news.news_id WHERE users_read_news.users_id = $users_id AND news.isDeleted= 0 ORDER BY users_read_news.read_date DESC");
         }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getEditorNews($_id,$search = "")
+    {
+        if ($search){
+            $statement = $this->pdo->prepare("SELECT _id, title, category, create_date, update_date FROM news WHERE author_id = :id AND title LIKE :title AND isDeleted = 0 ORDER BY create_date DESC");
+            $statement->bindValue(':title',"%$search%");
+        }else{
+            $statement = $this->pdo->prepare("SELECT _id, title, category, create_date, update_date FROM news WHERE author_id = :id AND isDeleted = 0 ORDER BY create_date DESC");
+        }
+        $statement->bindValue(':id',$_id);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -153,14 +168,23 @@ class Database
         $statement->execute();
     }
 
-    public function deleteNews($id,$soft=false)
+    public function deleteNews($_id,$soft=true)
     {   if ($soft == true){
-            $this->setData('news','isDeleted',1,$id);
+            $statement = $this->pdo->prepare("UPDATE news SET isDeleted = 1, delete_date = :date WHERE _id = :id");
+            $statement->bindValue(':id',$_id);
+            $statement->bindValue(':date',date('Y-m-d H:i:s'));    
+            $statement->execute();
         }else{
             $statement = $this->pdo->prepare('DELETE FROM news WHERE _id= :id');
-            $statement->bindValue(':id',$id);
+            $statement->bindValue(':id',$_id);
             $statement->execute();
         }
+    }
+    public function restoreNewsById($_id)
+    {
+        $statement = $this->pdo->prepare("UPDATE news SET isDeleted = 0 WHERE _id = :id");
+        $statement->bindValue(':id',$_id);    
+        $statement->execute();
     }
 
     public function updateNews(News $news)
@@ -192,14 +216,14 @@ class Database
 
     public function getUsersById($id)
     {
-        $statement = $this->pdo->prepare('SELECT * FROM users WHERE _id= :id');
+        $statement = $this->pdo->prepare('SELECT * FROM users WHERE _id= :id AND isDeleted = 0');
         $statement->bindValue(':id',$id);
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
     public function getUsersByIdRole($id,$role)
     {
-        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role = :role");
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role = :role AND isDeleted = 0");
         $statement->bindValue(':id',$id);
         $statement->bindValue(':role',$role);
         $statement->execute();
@@ -207,7 +231,7 @@ class Database
     }
     public function getUsersEditorsById($id)
     {
-        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role IN ('editor', 'user')");
+        $statement = $this->pdo->prepare("SELECT * FROM users WHERE _id= :id AND role IN ('editor', 'user') AND isDeleted = 0");
         $statement->bindValue(':id',$id);
         $statement->execute();
         return $statement->fetch(PDO::FETCH_ASSOC);
@@ -216,11 +240,11 @@ class Database
     public function getAllEditorUsers($search="")
     {
         if ($search){
-            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND username LIKE :username OR role LIKE :role");
+            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND isDeleted = 0 AND username LIKE :username OR role LIKE :role ORDER BY create_date DESC");
             $statement->bindValue(':username',"%$search%");
             $statement->bindValue(':role',"%$search%");
         }else{
-            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user')");
+            $statement = $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND isDeleted = 0 ORDER BY create_date DESC");
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -290,9 +314,10 @@ class Database
     public function getComments($newsId,$admin=false)
     {
         if ($admin){
-            $statement = $this->pdo->prepare("SELECT * FROM comments");
+            $statement = $this->pdo->prepare("SELECT * FROM comments ORDER BY create_date DESC");
         }else{
-            $statement = $this->pdo->prepare("SELECT * FROM comments WHERE news_id = $newsId AND isDeleted= 0");
+            $statement = $this->pdo->prepare("SELECT * FROM comments WHERE news_id = :news_id AND isDeleted= 0 ORDER BY create_date DESC");
+            $statement -> bindValue(':news_id', $newsId);
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -300,25 +325,70 @@ class Database
     public function getCommentsByUserId($_id,$search="")
     {
         if ($search){ 
-            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM news LEFT JOIN comments ON news._id = comments.news_id WHERE comments.commenter_id = $_id AND comments.comment LIKE :comment ORDER BY comments.create_date DESC");
+            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM comments LEFT JOIN news ON news._id = comments.news_id WHERE comments.commenter_id = $_id AND comments.comment LIKE :comment ORDER BY comments.create_date DESC");
             $statement-> bindValue(':comment', "%$search%");
         }else{
-            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM news LEFT JOIN comments ON news._id = comments.news_id WHERE comments.commenter_id = $_id ORDER BY comments.create_date DESC");
+            $statement = $this->pdo->prepare("SELECT news.title, comments.commenter_id, comments.isAnon, comments.news_id, comments.comment, comments.create_date FROM comments LEFT JOIN news ON news._id = comments.news_id WHERE comments.commenter_id = $_id ORDER BY comments.create_date DESC");
         }
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getAllComments($search="") //Mod
+    {
+        if ($search){ 
+            $statement = $this->pdo->prepare("SELECT news.title, comments.* FROM comments LEFT JOIN news ON news._id = comments.news_id WHERE comments.comment LIKE :comment OR comments.commenter_username LIKE :username OR news.title LIKE :title ORDER BY comments.create_date DESC");
+            $statement-> bindValue(':comment', "%$search%");
+            $statement-> bindValue(':title', "%$search%");
+            $statement-> bindValue(':username', "%$search%");
+        }else{
+            $statement = $this->pdo->prepare("SELECT news.title, comments.* FROM comments LEFT JOIN news ON news._id = comments.news_id ORDER BY comments.create_date DESC");
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getCommentsById($_id) //Mod
+    {     
+        $statement = $this->pdo->prepare("SELECT news.title, comments.* FROM comments LEFT JOIN news ON news._id = comments.news_id WHERE comments._id = :id");
+        $statement->bindValue(':id',$_id);    
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+
     public function createComment(Comments $comments)
     {
-        $statement = $this->pdo->prepare("INSERT INTO comments (news_id, newsTitle, commenter_id, commenter_username, comment, isAnon)
-        VALUES (:news_id, :newsTitle, :commenter_id, :commenter_username, :comment, :isAnon)");
+        $statement = $this->pdo->prepare("INSERT INTO comments (news_id, commenter_id, commenter_username, comment, isAnon)
+        VALUES (:news_id, :commenter_id, :commenter_username, :comment, :isAnon)");
         $statement->bindValue(':news_id', $comments-> news_id);
-        $statement->bindValue(':newsTitle', $comments-> newsTitle);
         $statement->bindValue(':commenter_id', $comments->commenter_id);
         $statement->bindValue(':commenter_username', $comments->commenter_username);
         $statement->bindValue(':comment', $comments->comment);
         $statement->bindValue(':isAnon', $comments->isAnon);
+        $statement->execute();
+    }
+
+    public function updateComment(Comments $comments){
+        $statement = $this->pdo->prepare("UPDATE comments SET update_date = :update_date, comment = :comment WHERE _id = :id");
+        $statement->bindValue(':comment', $comments->comment);
+        $statement->bindValue(':update_date', $comments->update_date);
+        $statement->bindValue(':id', $comments->id);
+        $statement->execute();
+    }
+
+    public function deleteCommentsById($_id) //Mod
+    {     
+        $statement = $this->pdo->prepare("UPDATE comments SET isDeleted = 1, delete_date = :date WHERE _id = :id");
+        $statement->bindValue(':id',$_id);
+        $statement->bindValue(':date',date('Y-m-d H:i:s'));    
+        $statement->execute();
+    }
+
+    public function restoreCommentsById($_id) //Mod
+    {     
+        $statement = $this->pdo->prepare("UPDATE comments SET isDeleted = 0 WHERE _id = :id");
+        $statement->bindValue(':id',$_id);    
         $statement->execute();
     }
 
@@ -351,17 +421,29 @@ class Database
             $statement->bindValue(':id', $_id);
             $statement->execute();
         }
-        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id AND isDeleted = 0");
             $statement->bindValue(':id', $_id);
             $statement->bindValue(':role', $role);
             $statement->execute();
 
     }
     public function setUserRoleById($_id,$role){//admin/mod
-        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id AND isDeleted = 0");
         $statement->bindValue(':id', $_id);
         $statement->bindValue(':role', $role);
         $statement->execute();
+    }
+    public function getDeletedUsers($search="")
+    {
+        if ($search){
+            $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND username LIKE :username OR role LIKE :role AND isDeleted = 1 ORDER BY delete_date DESC");
+            $statement->bindValue(':username', "%$search%");
+            $statement->bindValue(':role', "%$search%");
+        }else{
+            $statement= $this->pdo->prepare("SELECT * FROM users WHERE role IN ('editor', 'user') AND isDeleted = 1 ORDER BY delete_date DESC");
+        }
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }    
     
 

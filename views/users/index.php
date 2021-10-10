@@ -5,9 +5,11 @@
 <?php elseif($user['role'] == 'mod'): ?>
     <h1>Welcome Mod,<?= $user['firstname']." ".$user['lastname']; ?></h1> <hr> <br> <br>
     <h2> Mod Panel <a href="mod"><div class="btn btn-danger">Panel</div> </a></h2> <hr> <br> <br>
+
 <?php elseif($user['role'] == 'editor'): ?>
     <h1>Welcome Editor, <?= $user['firstname']." ".$user['lastname']; ?></h1> <hr> <br> <br>
-    <h2> Admin Panel <a href="editor"><div class="btn btn-danger">Panel</div> </a></h2> <hr> <br> <br>
+    <h2> Editor Panel <a href="editor"><div class="btn btn-danger">Panel</div> </a></h2> <hr> <br> <br>
+
 <?php else: ?>
     <h1>Welcome, <?= $user['firstname']." ".$user['lastname']; ?></h1> <hr> <br> <br>
 <?php endif; ?>

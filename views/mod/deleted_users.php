@@ -2,12 +2,12 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
-<h1> Users/Editors List </h1>
+<h1> Deleted Users/Editors List </h1>
 
  <form>
      <div class="input-group mb-3">
          <input type="text" class="form-control"
-                placeholder="Search for Users with Username or Role"
+                placeholder="Search for Deleted Users with Username or Role"
                 name="search" value="<?= $search ?>">
          <div class="input-group-append">
              <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -22,8 +22,7 @@
         <th scope="col">Username</th>
         <th scope="col">Role</th>
         <th scope="col">Register Date</th>
-        <th scope="col">Action</th>
-        <th scope="col">Action</th>
+        <th scope="col">Delete Date</th>
     </tr>
     <tbody>
 
@@ -35,19 +34,7 @@
            <td><?php echo $user['username'] ?></td>
            <td><?php echo $user['role'] ?></td>
            <td><?php echo $user['create_date'] ?></td>
-
-           <?php if ($user['role'] == 'editor'): ?>
-            <td>
-               <a href="/mod/editorcategory?_id=<?php echo $user['_id'] ?>" button type="button" class="btn btn-primary">Categories</a>
-           </td>
-           <td>
-               <a href="/mod/promote?_id=<?php echo $user['_id'] ?>" button type="button" class="btn btn-danger">Demote</a>
-           </td>
-           <?php else: ?>
-           <td>
-               <a href="/mod/promote?_id=<?php echo $user['_id'] ?>" button type="button" class="btn btn-info">Promote</a>
-           </td>
-           <?php endif; ?>
+           <td><?php echo $user['delete_date'] ?></td>
         </tr>
     <?php endforeach; 
     else: ?> <p>No users found according to your criteria</p>

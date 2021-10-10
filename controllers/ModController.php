@@ -3,16 +3,33 @@
 namespace app\controllers;
 
 use app\Router;
+use app\models\Comments;
 
 class ModController
 
 
 {
-    public static function index(Router $router){
+    public static function index(Router $router)
+    {
         $router->renderView('mod/index', [
         ]);
         
     }
+
+    public static function manageNews(Router $router)
+    {
+        $search = $_GET['search'] ?? '';
+        $news=$router->db->getNews($search,true);
+        $count = count($router->db->getNews("",true));
+        
+        $router->renderView('mod/news', [
+            'news' => $news,
+            'search' => $search,
+            'count' => $count,
+        ]);
+        
+    }
+
 
     public static function updateEditorCategories(Router $router){
         $_id = $_GET['_id'] ?? "";
@@ -140,5 +157,80 @@ class ModController
             'users' => $users,
             'search' => $search
         ]);
+    }
+
+    public static function manageComments(Router $router)
+    {
+        $search = $_GET['search'] ?? "";
+        $comments = $router->db->getAllComments($search);
+        $comments_count = count($router->db->getAllComments());
+        
+        $router->renderView('mod/comments', [
+            'comments' => $comments,
+            'search' => $search,
+            'comments_count' => $comments_count
+        ]);
+
+    }
+    public static function updateComments(Router $router)
+    {
+        $_id = $_GET['_id'] ?? "";
+        $comment = $router->db->getCommentsById($_id);
+        $warning = 0;
+        $errors = [];
+        $commentData = [
+            "_id" => "",
+            "comment" => "",
+            "update_date" => ""
+        ];
+
+        if (!$_id){
+            $warning = 1;
+        }
+
+        if ($comment && $_SERVER['REQUEST_METHOD'] === 'POST'){
+
+            if (isset($_POST['delete'])){
+                if (!$comment['isDeleted']){
+                    $router->db->deleteCommentsById($_id);
+                }
+                
+            }elseif (isset($_POST['restore'])){
+                if ($comment['isDeleted']){
+                    $router->db->restoreCommentsById($_id);
+                }
+            }else{
+                $commentData['_id'] = $_id;
+                $commentData['update_date']= date('Y-m-d H:i:s');
+                $commentData['comment']= $_POST['comment'];
+                $add_comments= new Comments();
+                $add_comments->load($commentData);
+                $errors= $add_comments->save();
+            }
+            if (empty($errors)){
+             header("Refresh:0");
+             exit;
+            }
+        }
+
+        $router->renderView('mod/update_comment', [
+            'id' => $_id,
+            'comment' => $comment,
+            'warning' => $warning,
+            'errors' => $errors
+        ]);
+
+    }
+
+    public static function deletedUsers(Router $router)
+    {
+        $search = $_GET['search'] ?? "";
+        $users = $router->db->getDeletedUsers($search);
+
+        $router->renderView('mod/deleted_users', [
+            'users' => $users,
+            'search' => $search
+        ]);
+
     }
 }

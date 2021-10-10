@@ -9,22 +9,22 @@ class Comments
 {
     public ?int $id = null;
     public ?int $news_id= null;
-    public ?string $newsTitle= null;
     public ?int $commenter_id= null;
     public ?string $commenter_username= null;
     public ?string $comment= null;
     public ?string $create_date= null;
+    public ?string $update_date= null;
     public ?int $isAnon= null;
 
     public function load($data)
     {
-        $this->id= $data['id'] ?? null;
-        $this->news_id = $data['news_id'];
-        $this->newsTitle = $data['newsTitle'];
-        $this->commenter_username= $data['commenter_username'];
-        $this->commenter_id= $data['commenter_id'];
+        $this->id= $data['_id'] ?? null;
+        $this->news_id = $data['news_id'] ?? null;
+        $this->commenter_username= $data['commenter_username'] ?? null;
+        $this->commenter_id= $data['commenter_id'] ?? null;
+        $this->update_date= $data['update_date'] ?? null;
         $this-> comment = trim($data['comment']);
-        $this-> isAnon = $data['isAnon'];
+        $this-> isAnon = $data['isAnon'] ?? null;
 
     }
 
@@ -36,12 +36,16 @@ class Comments
         if (!$this->comment){
             $errors[]= 'Please enter a comment';
         }
-        if ($this->comment && !$helper->lengthValidation($this->comment,1,7999)){
-            $errors[]= 'Comment cannot be longer than 7999 characters';
+        if ($this->comment && !$helper->lengthValidation($this->comment,1,400)){
+            $errors[]= 'Comment cannot be longer than 400 characters';
         }
 
         if(empty($errors)){
-            $db->createComment($this);
+            if($this->id){
+                $db->updateComment($this);
+            } else{
+                $db->createComment($this);
+            }
         }  
         return $errors;
     }

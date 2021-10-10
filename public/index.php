@@ -63,6 +63,7 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->post('/editor/createnews',[NewsController::class, 'editorCreate']); 
         $router ->get('/editor/updatenews',[NewsController::class, 'editorUpdate']);
         $router ->post('/editor/updatenews',[NewsController::class, 'editorUpdate']);
+        $router ->get('/editor/mynews',[EditorController::class, 'editorNews']);
     }
     if ($auth->getAuthLevel() > 2){ //2(Editör)'den büyük auth level, mod ve sonrası demek.
         $router ->get('/mod',[ModController::class, 'index']); //Mod paneli
@@ -71,6 +72,17 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->get('/mod/promote',[ModController::class, 'promote']);
         $router ->post('/mod/promote',[ModController::class, 'promote']);
         $router ->get('/mod/showusers',[ModController::class, 'usersAndEditors']);
+        $router ->get('/mod/deletedusers',[ModController::class, 'deletedUsers']);
+        $router ->get('/mod/comments',[ModController::class, 'manageComments']);
+        $router ->get('/mod/editcomment',[ModController::class, 'updateComments']);
+        $router ->post('/mod/editcomment',[ModController::class, 'updateComments']);
+        $router ->get('/mod/news',[ModController::class, 'manageNews']);
+        $router ->get('/mod/editnews',[NewsController::class, 'update']);
+        $router ->post('/mod/editnews',[NewsController::class, 'update']);
+        $router ->get('/mod/createnews',[NewsController::class, 'create']);
+        $router ->post('/mod/createnews',[NewsController::class, 'create']);
+
+
     }
     if ($auth->getAuthLevel() > 3){ //3(Mod)'den büyük auth level, admin demek.
         $router ->get('/admin',[UserController::class, 'adminIndex']); //Admin paneli

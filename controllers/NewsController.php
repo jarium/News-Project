@@ -97,9 +97,10 @@ class NewsController
                 $db->setUserNewsRead($users_id,$news_id);
             }
         }
+        //Show comments
+        $comments = $db->getComments($news_id);
 
         //Create comment 
-        $comments = $db->getComments($news_id);
         $errors = [];
         $commentData = [
             'news_id' => "",
@@ -111,7 +112,6 @@ class NewsController
                
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             $commentData['news_id']= $news['_id'];
-            $commentData['newsTitle'] = $news['title'];
             $commentData['commenter_id']= $_SESSION['_id'];
             $commentData['commenter_username']= $_SESSION['username'];
             $commentData['comment']= $_POST['comment'];
@@ -125,8 +125,9 @@ class NewsController
             if (empty($errors)){
              header("Refresh:0");
              exit;
-             }
-        }//Create comment end
+            }
+        }
+        //Create comment end
 
         $comments_count = count($comments);
         $router->renderView("news/spesific_news", [
@@ -138,7 +139,7 @@ class NewsController
         ]);
     }
 
-    public static function create(Router $router)
+    public static function create(Router $router) //Editor +
     {
         $errors = [];
         $newsData = [
@@ -173,36 +174,49 @@ class NewsController
         ]);
     }
 
-    public static function update(Router $router)
+    public static function update(Router $router) //Editor/Mod/Admin
     {
         $id = $_GET['_id'] ?? null;
-        if (!$id){
-            header('Location: /news');
-            exit;
-        }
+        $warning = 0;
         $errors= [];
-        $newsData = $router->db->getNewsById($id);
+        $newsData = $router->db->getNewsById($id,true);
+
+        if (!$id){
+            $warning = 1;
+        }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $newsData['title'] = $_POST['title'];
-            $newsData['content'] = $_POST['content'];
-            $newsData['author'] = $_SESSION['username'];
-            $newsData['author_id'] = $_SESSION['_id'];
-            $newsData['imageFile'] = $_FILES['image'];
-            $newsData['category'] = $_POST['category'];
+            if (isset($_POST['delete'])){
+                if (!$newsData['isDeleted']){
+                    $router->db->deleteNews($id,true);
+                }
+            }elseif(isset($_POST['restore'])){
+                if ($newsData['isDeleted']){
+                    $router->db->restoreNewsById($id,true);
+                }
+            }else{
+                $newsData['title'] = $_POST['title'];
+                $newsData['content'] = $_POST['content'];
+                $newsData['author'] = $_SESSION['username'];
+                $newsData['author_id'] = $_SESSION['_id'];
+                $newsData['imageFile'] = $_FILES['image'];
+                $newsData['category'] = $_POST['category'];
+                $news = new News();
+                $news->load($newsData);
+                $errors= $news->save();
+            }
 
-            $news = new News();
-            $news->load($newsData);
-            $errors= $news->save();
             if (empty($errors)){
-                header('Location: /news');
+                header('refresh:0');
                 exit;
             }
         }
 
-        $router->renderView('news/update', [
+        $router->renderView('mod/update_news', [
             'news' => $newsData,
-            'errors' => $errors
+            'errors' => $errors,
+            'id' => $id,
+            'warning' => $warning
         ]);
     }
 
@@ -221,5 +235,61 @@ class NewsController
     public static function about(Router $router)
     {
         $router->renderView('news/about');
+    }
+
+    public static function editorCreate(Router $router)
+    {
+        $_id = Authentication::getUserSessionInfo('_id');
+        $success = 0;
+        $editor_categories = $router->db->getEditorCategories($_id);
+        $categories= [];
+        $categories[]= 'Category...';
+        
+        foreach ($editor_categories as $data){
+            foreach ($data as $key => $val){
+                if ($val == 1){
+                    $categories[]= ucfirst($key);
+                }
+            }
+        }
+
+        $errors = [];
+        $newsData = [
+            'title' => "",
+            'author' => "",
+            'author_id' => "",
+            'content' => "",
+            'image' => "",
+            'category' => "",
+        ];
+    
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $newsData['title'] = $_POST['title'];
+            $newsData['content'] = $_POST['content'];
+            $newsData['author'] = $_SESSION['username'];
+            $newsData['author_id'] = $_SESSION['_id'];
+            $newsData['imageFile'] = $_FILES['image'];
+            $newsData['category'] = $_POST['category'];
+
+            $news= new News();
+            $news->load($newsData);
+            $errors= $news->save($categories);
+            $success = 1;
+            if (empty($errors)){
+                header('refresh:0');
+                exit;
+            }
+
+        }
+        $router->renderView('news/create', [
+            'news' => $newsData,
+            'errors' => $errors,
+            'success' => $success,
+            'categories' => $categories
+        ]);
+    }
+    public static function editorUpdate(Router $router)
+    {
+
     }
 }
