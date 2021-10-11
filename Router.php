@@ -38,7 +38,7 @@ Class Router
        }
     }
 
-    public function renderView($view, $params = [], $api=false) // news/index
+    public function renderView($view, $params = [], $api=false, $maintenance= false) // news/index
     {
         foreach ($params as $key => $value){
             $$key = $value;
@@ -46,10 +46,12 @@ Class Router
         ob_start();
         include_once __DIR__."/views/$view.php";
         $content= ob_get_clean();
-        if($api == false){
-            include_once __DIR__."/views/_layout.php";
-        }else{
+        if($maintenance){
+            include_once __DIR__."/views/maintenance_layout.php";
+        }elseif($api){
             include_once __DIR__."/views/api_layout.php";
+        }else{
+            include_once __DIR__."/views/_layout.php";
         }
         
     }

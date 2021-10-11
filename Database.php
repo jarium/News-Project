@@ -10,9 +10,15 @@ class Database
 {
     public static Database $db;
 
+    private $host = DBHOST;
+    private $port = DBPORT;
+    private $dbname = DBNAME;
+    private $username = DBUSER;
+    private $password = DBPASS;
+
     public function __construct()
     {
-        $this->pdo = new PDO('mysql:host=localhost;port=3306;dbname=newspage','root','root');
+        $this->pdo = new PDO("mysql:host=$this->host;port=$this->port;dbname=$this->dbname",$this->username,$this->password);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         self::$db = $this;

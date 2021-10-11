@@ -5,11 +5,13 @@ namespace app\controllers;
 use app\Router;
 use app\models\User;
 use app\Authentication;
+use app\Logger\Logger;
 
 class UserController
 {
+
     public static function index(Router $router)
-    {
+    {   $logger = New Logger;
         $_id= Authentication::getUserSessionInfo('_id');
         $user=$router->db->getUsersById($_id);
         
@@ -17,9 +19,13 @@ class UserController
         $router->renderView('users/index', [
             'user' => $user
         ]);
+
+        
+        $logger->log('Accsess to /users','INFO',$_SESSION['username'],$_SESSION['role']);
     }
     public static function create(Router $router)
     {
+        $logger = New Logger;
         $errors = [];
         $userData = [
             'username' => "",
@@ -69,11 +75,13 @@ class UserController
             if (isset($_POST['social'])){
                 $userData['categories'][]= 'social';
             }
+            
 
             $user= new User();
             $user->load($userData);
             $errors= $user->save();
             if (empty($errors)){
+                $logger->log('Successful register process','INFO',$userData['username'],'user');
                 header('Location: /users/login');
                 exit;
             }
@@ -83,9 +91,11 @@ class UserController
             'user' => $userData,
             'errors' => $errors
         ]);
+        $logger->log('Accsess to /users/register','INFO','0','0');
     }
     public static function login(Router $router)
     {
+        $logger = New Logger;
         $errors = [];
         $userData = [
             'username' => "",
@@ -100,8 +110,11 @@ class UserController
             $user->loadLoginInfo($userData);
             $errors= $user->saveLoginInfo();
             if (empty($errors)){
+                $logger->log('Successful login process','NOTICE',$userData['username'],$_SESSION['role']);
                 header('Location: /users');
                 exit;
+            }else{
+                $logger->log('Failed login process','WARNING',$userData['username'],'0');
             }
 
         }
@@ -109,17 +122,20 @@ class UserController
             'user' => $userData,
             'errors' => $errors
         ]);
+        $logger->log('Access to /users/login','INFO','0','0');
     }
     public static function logout(){
         $authentication= new Authentication;
+        $logger = New Logger;
+        $logger->log('Logged out','INFO',$_SESSION['username'],$_SESSION['role']);
         $authentication->logout();
-
         header('Location: /');
         exit;
       
         
     }
     public static function updateUserCategories(Router $router){
+        $logger = New Logger;
         $_id = Authentication::getUserSessionInfo('_id');
         $oldData = $router->db->getUserCategories($_id);
         $userData = [];
@@ -168,6 +184,7 @@ class UserController
             $user= new User();
             $user->loadCategoryInfo($_id,$userData);
             $user->updateCategories();
+            $logger->log('Updated user categories','INFO',$_SESSION['username'],$_SESSION['role']);
             $success= 1;
             
         }
@@ -176,9 +193,12 @@ class UserController
             'user' => $userData,
             'success' => $success
         ]);
+        $logger->log('Access to users/category','INFO',$_SESSION['username'],$_SESSION['role']);
     }
 
-    public static function getuserComments(Router $router){
+    public static function getuserComments(Router $router)
+    {
+        $logger = New Logger;
         $_id= Authentication::getUserSessionInfo('_id');
         $search = $_GET['search'] ?? '';
         $warning = "";
@@ -188,6 +208,10 @@ class UserController
         if (!$comments_count){
             $warning = 1;
         }
+        if ($search){
+            $logger->log("Search attempt for /users/comments: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+        }
+
 
         $router->renderView('users/comments', [
             'comments' => $comments,
@@ -195,10 +219,12 @@ class UserController
             'warning' => $warning,
             'search' => $search
         ]);
+        $logger->log('Access to users/comments','INFO',$_SESSION['username'],$_SESSION['role']);
     }
 
     public static function getUserNewsRead(Router $router)
     {
+        $logger = New Logger;
         $_id= Authentication::getUserSessionInfo('_id');
         $search = $_GET['search'] ?? '';
         $warning = "";
@@ -207,6 +233,9 @@ class UserController
         if (!$newsCount){
             $warning = 1;
         }
+        if ($search){
+            $logger->log("Search attempt for /users/newsread: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+        }
 
         $router->renderView('users/news_read', [
             'news' => $news,
@@ -214,25 +243,21 @@ class UserController
             'newsCount' => $newsCount,
             'warning' => $warning
         ]);
+        $logger->log('Access to users/newsread','INFO',$_SESSION['username'],$_SESSION['role']);
     }
 
     
-    public static function deleteUser(Router $router){
+    public static function deleteUser(Router $router)
+    {
+        $logger = New Logger;
         if (isset($_POST['delete'])){
             $auth = new Authentication;
             $_id= $auth->getUserSessionInfo('_id');
             $router->db->deleteUser($_id,true);
+            $logger->log('Deleted their account','NOTICE',$_SESSION['username'],$_SESSION['role']);
             $auth->logout();
             header("location: /");
         }
-        
-    }
-
-
-    //Admin
-    public static function adminIndex(Router $router){
-        $router->renderView('panels/admin/index', [
-        ]);
         
     }
 

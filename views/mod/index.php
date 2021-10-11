@@ -7,7 +7,7 @@
 <?php else: ?> <br><br>
 <?php endif; ?> 
 
-<h2> Search Users <a href="mod/showusers"><div class="btn btn-info">Show</div> </a></h2>
+<h2> Search Users/Editors <a href="mod/showusers"><div class="btn btn-info">Show</div> </a></h2>
 <p style="font-size:large;">You can search users for informations like user id, or to promote/demote.</p> <hr> <br> <br>
 
 <h2> Promote/Demote <a href="mod/promote"><div class="btn btn-info">Promote</div> </a></h2>
@@ -33,3 +33,6 @@
 
 <h2> Update/Delete News <a href="/mod/editnews"><div class="btn btn-info">Check</div> </a></h2>
 <p style="font-size:large;">You can update/delete/restore news.</p> <hr> <br> <br>
+
+<h2> Create News <a href="/mod/createnews"><div class="btn btn-info">Create</div> </a></h2>
+<p style="font-size:large;">You can create news from any category.</p> <hr> <br> <br>

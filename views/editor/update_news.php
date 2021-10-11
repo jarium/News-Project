@@ -77,6 +77,8 @@
     <button type="submit" class="btn btn-primary">Update</button>
 </form>
 
+<?php elseif ($warning): ?>
+  <div style="font-size:large"class="alert alert-warning">Enter a News Id of yours above. You Can Check the Id of your News <a href ="/editor/mynews">Here </a></div>
 <?php elseif (!$warning): ?>
   <div style="font-size:large"class="alert alert-warning">No News Found Matching The Id, You Can Check the Id of Your News <a href ="/editor/mynews">Here </a></div>
 <?php endif; ?>

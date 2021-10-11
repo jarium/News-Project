@@ -46,6 +46,8 @@
   <?php endif; ?>
   </form>
 
+<?php elseif ($warning): ?>
+  <div style="font-size:large"class="alert alert-warning">Enter a Comment Id above. You Can Check the Id of Comments <a href ="/mod/comments">Here </a></div>
 <?php elseif (!$warning): ?>
   <div style="font-size:large"class="alert alert-warning">No Comments Found Matching The Id, You Can Check the Id of Comments <a href ="/mod/comments">Here </a></div>
 <?php endif; ?>

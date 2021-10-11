@@ -2,7 +2,8 @@
     <a href="/admin" class="btn btn-info">Go back to Admin Panel</a>
 </p>
 
-<h1> Users List (<?= $count ?>) </h1>
+<h1> <a href = "/admin/users">Users List (<?= $count ?>) </a></h1>
+<h4>Showing active users, for deleted users, visit <a href="/mod/deletedusers">Here</a></h4>
 
  <form>
      <div class="input-group mb-3">

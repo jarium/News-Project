@@ -2,3 +2,6 @@
 *.png
 *.jpg
 *.jpeg
+
+# Ignore log files
+*.log

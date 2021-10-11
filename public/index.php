@@ -4,6 +4,7 @@ session_start();
 date_default_timezone_set('Turkey');
 
 require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__.'/../config.php';
 
 use app\Router;
 use app\controllers\NewsController;
@@ -17,34 +18,32 @@ use app\Authorization;
 $auth = new Authorization;
 $router = new Router();
 
-/**
- * Route lar alanındaki izlediğim mantık şu: Herkesin her zaman erişebileceği route'lar var. Bu da haberler ve haberin detayları.
- * Geri kalan route lar da, kullanıcının login işlemi gerçekleştirip gerçekleştirmediğine ya da auth level'ının yeterli olup olmadığına göre değişiyor.
- * Eğer bir route kullanıcı için tanımlanmıyorsa ya da geçersiz bir route girmişse, / yani /news (haberlerin gösterildiği anasayfa) sayfasına yönlendirilir.
- **/
+if (!MAINTENANCE){//Maintenance aktif değilse
+    //Herkesin erişebileceği route lar
+    $router ->get('/',[NewsController::class, 'index']); //News list
+    $router ->get('/news',[NewsController::class, 'index']); //News list
+    $router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
+    $router->get('/api/news',[ApiController::class, 'api']);
 
-//Herkesin erişebileceği route lar
-$router ->get('/',[NewsController::class, 'index']); //News list
-$router ->get('/news',[NewsController::class, 'index']); //News list
-$router ->get('/news/spesific',[NewsController::class,'viewSpesificNews']); //Haber detayını herkes görebilir
-$router->get('/api/news',[ApiController::class, 'api']);
+    //News type routes start
+    $router ->get('/news/science',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/health',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/technology',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/world',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/economy',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/sports',[NewsController::class,'viewNewsWithCategory']);       // => type a göre news herkes erişebilir
+    $router ->get('/news/art',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/education',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/social',[NewsController::class,'viewNewsWithCategory']);
+    $router ->get('/news/political',[NewsController::class,'viewNewsWithCategory']);
+    //News type routes end
 
-//News type routes start
-$router ->get('/news/science',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/health',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/technology',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/world',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/economy',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/sports',[NewsController::class,'viewNewsWithCategory']);       // => type a göre news herkes erişebilir
-$router ->get('/news/art',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/education',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/social',[NewsController::class,'viewNewsWithCategory']);
-$router ->get('/news/political',[NewsController::class,'viewNewsWithCategory']);
-//News type routes end
+    $router ->get('/about',[NewsController::class,'about']); //About sayfasına herkes erişebilir
+}else{
+    $router ->get('/',[NewsController::class, 'maintenance']); //Maintenance aktifse admin ve modlar dışındakiler için sadece burası aktif oluyor
+}
 
-$router ->get('/about',[NewsController::class,'about']); //About sayfasına herkes erişebilir
-
-if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
+if ($auth->isLoggedIn() && !MAINTENANCE){//Giriş yapan kullanıcılar için route lar
     $router ->get('/users',[UserController::class, 'index']); //Giriş varsa user bilgileri(index)
     $router ->post('/users',[UserController::class, 'deleteUser']);// Kullanıcı hesap silme
     $router ->get('/users/logout',[UserController::class, 'logout']); //Giriş varsa logout hakkı olur
@@ -93,7 +92,7 @@ if ($auth->isLoggedIn()){//Giriş yapan kullanıcılar için route lar
         $router ->get('/admin/users',[AdminController::class, 'users']);
     }
 
-}else{//Giriş yapmayan kullanıcılar için route lar
+}elseif(!$auth->isLoggedIn() && !MAINTENANCE){//Giriş yapmayan kullanıcılar için route lar
     $router ->get('/users/register',[UserController::class, 'create']); //Giriş yoksa register get
     $router ->post('/users/register',[UserController::class, 'create']); //Giriş yoksa register post
     $router ->get('/users/login',[UserController::class, 'login']); //Giriş yoksa login get 

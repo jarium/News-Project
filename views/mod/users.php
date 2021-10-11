@@ -3,6 +3,7 @@
 </p>
 
 <h1> <a href = "/mod/showusers">Users/Editors List (<?= $count ?>)</a></h1>
+<h4>Showing active users/editors, for deleted users, visit <a href="/mod/deletedusers">Here</a></h4>
 
  <form>
      <div class="input-group mb-3">

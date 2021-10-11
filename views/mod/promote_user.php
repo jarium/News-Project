@@ -32,6 +32,8 @@
     <h3> Categories <a href="/mod/editorcategory?_id=<?= $user['_id']; ?>"><button class="btn btn-primary">Update</button></a> </h3>
     <?php endif; ?>
 
+<?php elseif ($warning): ?>
+  <div style="font-size:large"class="alert alert-warning">Enter a User/Editor Id above. You Can Check the Id of Users/Editors <a href ="/mod/showusers">Here </a></div>
 <?php elseif (!$warning): ?>
   <div style="font-size:large"class="alert alert-warning">No Users/Editors Found Matching The Id, You Can Check the Id of Users/Editors <a href ="/mod/showusers">Here </a></div>
 <?php endif; ?>

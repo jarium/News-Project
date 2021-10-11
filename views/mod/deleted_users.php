@@ -2,7 +2,7 @@
     <a href="/mod" class="btn btn-info">Go back to Mod Panel</a>
 </p>
 
-<h1> Deleted Users/Editors List </h1>
+<h1> <a href= "/mod/deletedusers">Deleted Users List (<?= $count ?>)</a></h1>
 
  <form>
      <div class="input-group mb-3">

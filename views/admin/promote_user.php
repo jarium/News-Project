@@ -47,6 +47,8 @@
     <div class="alert alert-danger">You cannot promote or demote an Admin</div>
     <?php endif; ?>
 
+<?php elseif ($warning): ?>
+  <div style="font-size:large"class="alert alert-warning">Enter a User Id above. You Can Check the Id of Users <a href ="/admin/users">Here </a></div>
 <?php elseif (!$warning): ?>
   <div style="font-size:large"class="alert alert-warning">No Users Found Matching The Id, You Can Check the Id of Users <a href ="/admin/users">Here </a></div>
 <?php endif; ?>

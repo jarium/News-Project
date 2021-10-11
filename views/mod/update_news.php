@@ -73,7 +73,8 @@
   <?php endif; ?>
 </form>
 
-
+<?php elseif ($warning): ?>
+  <div style="font-size:large"class="alert alert-warning">Enter a News Id above. You Can Check the Id of News <a href ="/mod/news">Here </a></div>
 <?php elseif (!$warning): ?>
   <div style="font-size:large"class="alert alert-warning">No News Found Matching The Id, You Can Check the Id of News <a href ="/mod/news">Here </a></div>
 <?php endif; ?>
