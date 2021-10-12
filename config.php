@@ -4,7 +4,7 @@
 | Database Configuration
 |--------------------------------------------------------------------------
 */
-define ('DBHOST','localhost');
+define ('DBHOST','mariadb');
 define ('DBPORT',3306);
 define ('DBNAME','newspage');
 define ('DBUSER','root');

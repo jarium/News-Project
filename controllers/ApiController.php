@@ -15,10 +15,10 @@ class ApiController
             $news=$router->db->getNewsById($_id,false,true);
             if ($news){
                 $news= json_encode($news,JSON_PRETTY_PRINT);
-                $logger->log("Access to /api/news with id: $_id",'INFO',$_SESSION['username'],$_SESSION['role']);
+                $logger->log("Access to /api/news with id: $_id",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
             }else{
                 $news = "404";
-                $logger->log("Tried to access a news api that doesn't exist (with id: $_id)",'INFO',$_SESSION['username'],$_SESSION['role']);
+                $logger->log("Tried to access a news api that doesn't exist (with id: $_id)",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
             }
 
         }else{
@@ -32,7 +32,7 @@ class ApiController
         $router->renderView('api/index', [
             'news' => $news,
         ], true);
-        $logger->log('Access to /api/news','INFO',$_SESSION['username'],$_SESSION['role']);
+        $logger->log('Access to /api/news','INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
     
     }
 }

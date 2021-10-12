@@ -253,8 +253,8 @@ class UserController
         if (isset($_POST['delete'])){
             $auth = new Authentication;
             $_id= $auth->getUserSessionInfo('_id');
-            $router->db->deleteUser($_id,true);
             $logger->log('Deleted their account','NOTICE',$_SESSION['username'],$_SESSION['role']);
+            $router->db->deleteUser($_id,true);
             $auth->logout();
             header("location: /");
         }

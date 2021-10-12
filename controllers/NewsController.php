@@ -18,7 +18,7 @@ class NewsController
         $search = $_GET['search'] ?? '';
 
         if ($search){
-            $logger->log("Search attempt for /news: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+            $logger->log("Search attempt for /news: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
         }
 
         $news=$router->db->getNews($search);
@@ -33,11 +33,14 @@ class NewsController
     {
         $logger = New Logger;
         $search= $_GET['search'] ?? '';
-        $url= $_SERVER['PATH_INFO'];
+        $url= $_SERVER['REQUEST_URI'];
+        if (strpos($url, '?') !== false){
+            $url = substr($url, 0, strpos($url, '?'));
+        }
         $url= substr($url,6);
 
         if ($search){
-            $logger->log("Search attempt for /news/$url: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+            $logger->log("Search attempt for /news/$url: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
         }
 
         $news = $router->db->getNewsWithCategory($url,$search);
@@ -69,7 +72,7 @@ class NewsController
             $search = $_GET['search'] ?? '';
 
             if ($search){
-                $logger->log("Search attempt for /news/forme: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+                $logger->log("Search attempt for /news/forme: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
             }
 
             foreach ($user_categories as $category){
