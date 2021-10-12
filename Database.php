@@ -422,29 +422,23 @@ class Database
             }
         }
     }
-    public function setEditorById($_id,$role,$promote=true,$username="")
+    public function setUserRoleById($_id,$current_role,$set_role,$username="") //Mod, Admin
     {
-        if ($promote){
+        if ($current_role == 'editor'){
+            $statement= $this->pdo->prepare('DELETE FROM editor_categories WHERE editor_id = :id');
+            $statement->bindValue(':id', $_id);
+            $statement->execute();
+        }elseif ($set_role == 'editor'){
             $statement= $this->pdo->prepare("INSERT INTO editor_categories (editor_id, editor_username) VALUES (:id, :username)");
             $statement->bindValue(':id', $_id);
             $statement->bindValue(':username', $username);
             $statement->execute();
-        }else{
-            $statement= $this->pdo->prepare('DELETE FROM editor_categories WHERE editor_id = :id');
-            $statement->bindValue(':id', $_id);
-            $statement->execute();
         }
-        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id AND isDeleted = 0");
+        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
             $statement->bindValue(':id', $_id);
-            $statement->bindValue(':role', $role);
+            $statement->bindValue(':role', $set_role);
             $statement->execute();
 
-    }
-    public function setUserRoleById($_id,$role){//admin
-        $statement= $this->pdo->prepare("UPDATE users SET role = :role WHERE _id = :id");
-        $statement->bindValue(':id', $_id);
-        $statement->bindValue(':role', $role);
-        $statement->execute();
     }
     public function getDeletedUsers($search="")
     {

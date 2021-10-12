@@ -144,14 +144,14 @@ class ModController
             
             if (isset($_POST['user'])){
                 if($role == 'editor'){
-                    $router->db->setEditorById($_id,'user',false,"");
+                    $router->db->setUserRoleById($_id,'editor','user');
                     $logger->log("Demoted editor to user with id: $_id",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }
                 
             }elseif (isset($_POST['editor'])){
                 if($role == 'user'){
-                    $router->db->setEditorById($_id,'editor',true,$username);
+                    $router->db->setUserRoleById($_id,'user','editor',$username);
                     $logger->log("Promoted user to editor with id: $_id",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }

@@ -72,26 +72,26 @@ class AdminController
             
             if (isset($_POST['user'])){
                 if($role != 'user' || $role != 'admin'){
-                    $router->db->setUserRoleById($_id,'user');
+                    $router->db->setUserRoleById($_id,$user['role'],'user');
                     $logger->log("Demoted user from [$role] to -> [user] with id: $_id ",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }
                 
             }elseif (isset($_POST['editor'])){
                 if($role != 'editor' || $role != 'admin'){
-                    $router->db->setUserRoleById($_id,'editor');
+                    $router->db->setUserRoleById($_id,$user['role'],'editor',$user['username']);
                     $logger->log("Set user role from [$role] to -> [editor] with id: $_id ",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }
             }elseif (isset($_POST['mod'])){
                 if($role != 'mod' || $role != 'admin'){
-                    $router->db->setUserRoleById($_id,'mod');
+                    $router->db->setUserRoleById($_id,$user['role'],'mod');
                     $logger->log("Promoted user from [$role] to -> [mod] with id: $_id ",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }
             }elseif (isset($_POST['admin'])){
                 if($role != 'admin'){
-                    $router->db->setUserRoleById($_id,'admin');
+                    $router->db->setUserRoleById($_id,$user['role'],'admin');
                     $logger->log("Promoted user from [$role] to -> [admin] with id: $_id ",'NOTICE',$_SESSION['username'],$_SESSION['role']);
                     header("refresh:0");
                 }
