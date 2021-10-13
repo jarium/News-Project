@@ -18,6 +18,10 @@
      </div>
  </form>
 
+<?php if ($success): ?>
+  <div class="alert alert-success">Successfully Updated News</div>
+<?php endif; ?>
+
 <?php if ($news): ?>
     <h3>News Id: <?= $news['_id']?> <?php if ($news['isDeleted']):?> (Deleted) <?php endif; ?></h3>
     <h3>Author: <?= $news['author_username']?></h3>
