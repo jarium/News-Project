@@ -9,7 +9,7 @@ $ cp .env.example .env
 $ docker-compose up
 ```
 
-### Setting Up The MySQL Database <hr>
+### Setting Up The MySQL Database
 After successfully installing, go to http://localhost:8082/ then login with the info below:
 
 - Server: `mariadb`
