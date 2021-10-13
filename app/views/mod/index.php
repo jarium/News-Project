@@ -4,7 +4,6 @@
 <p>
     <a href="/admin" class="btn btn-danger">Go back to Admin Panel</a>
 </p> <hr> <br>
-<?php else: ?> <br><br>
 <?php endif; ?> 
 
 <h2> Search Users/Editors <a href="mod/showusers"><div class="btn btn-info">Show</div> </a></h2>
@@ -36,3 +35,6 @@
 
 <h2> Create News <a href="/mod/createnews"><div class="btn btn-info">Create</div> </a></h2>
 <p style="font-size:large;">You can create news from any category.</p> <hr> <br> <br>
+
+<h2> More... <a href="/editor"><div class="btn btn-danger">Editor Panel</div> </a></h2>
+<p style="font-size:large;">You can check Editor Panel for more.</p> <hr> <br> <br>

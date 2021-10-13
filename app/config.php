@@ -4,11 +4,11 @@
 | Database Configuration
 |--------------------------------------------------------------------------
 */
-define ('DBHOST','mysql');
+define ('DBHOST','mariadb');
 define ('DBPORT',3306);
 define ('DBNAME','newspage');
-define ('DBUSER','user');
-define ('DBPASS','pass');
+define ('DBUSER','root');
+define ('DBPASS','root');
 
 /*
 |--------------------------------------------------------------------------

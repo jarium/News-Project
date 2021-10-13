@@ -10,7 +10,7 @@
 <form>
      <div class="input-group mb-3">
          <input type="text" class="form-control"
-                placeholder="Enter Editor/User Id"
+                placeholder="Enter User Id"
                 name="_id" value="<?= $id ?>">
          <div class="input-group-append">
              <button class="btn btn-outline-secondary" type="submit">Search</button>

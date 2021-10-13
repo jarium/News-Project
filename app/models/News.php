@@ -33,6 +33,7 @@ class News
 
     public function save($editorCategories=[])
     {
+        $helper = new UtilHelper;
         $errors = [];
         if (!$this->title){
             $errors[]= 'Title for the news is required';
@@ -45,6 +46,9 @@ class News
         }
         if ($this->category == 'Category...'){
             $errors[] = 'Category for the news is required';
+        }
+        if ($this->title && !$helper->lengthValidation($this->title,1,200)){
+            $errors[]= "Title cannot be longer than 200 characters";
         }
         if ($editorCategories){
             if (!in_array($this->category,$editorCategories) && $this->category != 'Category...'){

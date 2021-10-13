@@ -1,4 +1,14 @@
-<h1>Editor Panel</h1> <hr> <br> <br>
+<h1>Editor Panel</h1> <hr>
+
+<?php if ($_SESSION['role'] == 'admin'): ?>
+<p>
+    <a href="/admin" class="btn btn-danger">Go back to Admin Panel</a>
+</p> <hr> <br>
+<?php elseif ($_SESSION['role'] == 'mod'): ?>
+<p>
+    <a href="/mod" class="btn btn-danger">Go back to Mod Panel</a>
+</p> <hr> <br>   
+<?php endif; ?> 
 
 <h2> Create News <a href="editor/createnews"><div class="btn btn-info">Create</div> </a></h2>
 <p style="font-size:large;">You can create news with the categories that you are allowed.</p> <hr> <br> <br>
