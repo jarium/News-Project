@@ -1,8 +1,8 @@
 <p>
     <a href="/news" class="btn btn-info">Go back to News</a>
 </p>
-<img src="../<?= $news['image'];?>" alt="">
-<h1> <?= $news['title']; ?> </h1>
+<img src="../<?= $news['image'];?>" alt="" class="img">
+<h1 style = "margin-top:15px;"> <?= $news['title']; ?> </h1>
  <p>
      <?= $news['content']; ?>
  </p>

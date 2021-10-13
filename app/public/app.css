@@ -2,7 +2,16 @@
     padding:50px;
 }
 
-img{
-    width:100%;
-    max-width:800px;
+.img{
+    width:auto;
+    max-width:900px;
+    max-height: 600px;
+}
+
+.thumb-img{
+    width:50px;
+}
+
+.center{
+    text-align: center;
 }

@@ -42,7 +42,7 @@
 <form action="" method="post" enctype = "multipart/form-data">
 
     <?php if ($news['image']): ?>
-        <img src="../<?php echo $news['image']?>" class="update-image">
+        <img src="../<?php echo $news['image']?>" class="img">
     <?php endif; ?>
 
     <div style= "margin-top:10px;" class="form-group">

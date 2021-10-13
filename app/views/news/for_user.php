@@ -22,15 +22,20 @@
  <table class="table">
     <tr>
         <th scope="col">#</th>
+        <th scope="col">Image</th>
         <th scope="col">Title</th>
         <th scope="col">Category</th>
         <th scope="col">Create Date</th>
+        <th scope="col">Action</th>
     </tr>
     <tbody>
 
     <?php if ($news): foreach ($news as $i => $new): ?>
        <tr>
            <th scope="row"><?php echo $i + 1 ?> </th>
+           <td>
+                <img src="../<?= $new['image'];?>" class="thumb-img">
+           </td>
            <td><?php echo $new['title'] ?></td>
            <td><?php echo $new['category'] ?></td>
            <td><?php echo $new['create_date'] ?></td>
