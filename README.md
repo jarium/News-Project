@@ -88,17 +88,17 @@ After installing the docker container and setting up our mysql database, the web
 - [/admin/activities](http://localhost/admin/activities) -> Page for admins to check activities of users with all kind of roles
 <br> <br>
 
-## Maintenance <hr>
+## Maintenance
 You can set/unset the maintenance mode by changing the MAINTENANCE constant in the "config.php" file. False = no maintenance, True = maintenance. If set to true, all of the users that visit the website will get the maintenance message and all of the routes will be unavailable other than the route that prints maintenance message.
 
 <br> <br>
 
-## Default Admin <hr>
+## Default Admin
 username: admin<br>
 password: adminşifresi
 <br> <br>
 
-## For More <hr>
+## For More
 You can mail to: efebyk97@gmail.com for more. <br>
 With my regards, <br>
 Efe Buyuk
