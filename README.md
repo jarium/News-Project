@@ -5,6 +5,7 @@ The website uses "Soft delete" system. So when a data is deleted, its only remov
 
 ## Installation <hr>
 ```bash
+$ cp .env.example .env
 $ docker-compose up
 ```
 
