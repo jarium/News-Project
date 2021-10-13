@@ -3,7 +3,7 @@ A news website project which contains register, login, users and content managem
 The website uses "Soft delete" system. So when a data is deleted, its only removed temporarly from the application. The data can either stay deleted or be restored by desire. 
 <br> <br>
 
-## Installation <hr>
+## Installation
 ```bash
 $ cp .env.example .env
 $ docker-compose up
@@ -20,7 +20,7 @@ After logging in, create a database called `newspage` then import the `newspage.
 After a successfull import, the database will be ready.
 <br> <br>
 
-## Routes <hr>
+## Routes
 
 After installing the docker container and setting up our mysql database, the website will be available at http://localhost
 
