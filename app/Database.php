@@ -289,7 +289,6 @@ class Database
         $statement = $this->pdo->prepare("UPDATE editor_categories SET ".$sql." WHERE editor_id = :id");
         $statement->bindValue(':id',$_id);
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function createUser(User $user,$sql,$sql2)
