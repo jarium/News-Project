@@ -19,7 +19,7 @@
 
 <?php if ($log): ?>
 <pre>
-<?= $log ?>
+<?= htmlspecialchars($log) ?>
 </pre>
 <?php else: ?>
 <div style="font-size:large;" class="alert alert-warning">No activities found for the date you specified</div>

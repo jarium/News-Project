@@ -23,7 +23,7 @@ class Comments
         $this->commenter_username= $data['commenter_username'] ?? null;
         $this->commenter_id= $data['commenter_id'] ?? null;
         $this->update_date= $data['update_date'] ?? null;
-        $this-> comment = trim($data['comment']);
+        $this-> comment = htmlspecialchars(trim($data['comment']));
         $this-> isAnon = $data['isAnon'] ?? null;
 
     }

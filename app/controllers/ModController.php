@@ -24,6 +24,7 @@ class ModController
         $search = $_GET['search'] ?? '';
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /mod/news: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
@@ -44,14 +45,16 @@ class ModController
     {
         $logger = New Logger;
         $_id = $_GET['_id'] ?? "";
+
+        if (!$_id){
+            $warning = 1;
+        }else{
+            $_id = htmlspecialchars($_id);
+        }
         $user = $router->db->getUsersbyIdRole($_id,'editor');
         $editorData=[];
         $success= 0;
         $warning = 0;
-
-        if (!$_id){
-            $warning = 1;
-        }
 
         if ($user){
             $oldData = $router->db->getEditorCategories($_id);
@@ -131,12 +134,13 @@ class ModController
     {
         $logger = new Logger;
         $_id = $_GET['_id'] ?? "";
-        $user = $router->db->getUsersEditorsById($_id);
         $warning = 0;
-
         if (!$_id){
             $warning = 1;
+        }else{
+            $_id = htmlspecialchars($_id);
         }
+        $user = $router->db->getUsersEditorsById($_id);
 
         if ($user){
             $username = $user['username'];
@@ -171,6 +175,7 @@ class ModController
         $search = $_GET['search'] ?? "";
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /mod/showusers: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
@@ -190,6 +195,7 @@ class ModController
         $search = $_GET['search'] ?? "";
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /mod/comments: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
@@ -208,18 +214,22 @@ class ModController
     {
         $logger = new Logger;
         $_id = $_GET['_id'] ?? "";
-        $comment = $router->db->getCommentsById($_id);
         $warning = 0;
+
+        if (!$_id){
+            $warning = 1;
+        }else{
+            $_id = htmlspecialchars($_id);
+        }
+
+        $comment = $router->db->getCommentsById($_id);
+        
         $errors = [];
         $commentData = [
             "_id" => "",
             "comment" => "",
             "update_date" => ""
         ];
-
-        if (!$_id){
-            $warning = 1;
-        }
 
         if ($comment && $_SERVER['REQUEST_METHOD'] === 'POST'){
 
@@ -263,8 +273,10 @@ class ModController
     {
         $logger = new Logger;
         $search = $_GET['search'] ?? "";
+        
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /mod/deleted_users: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
@@ -285,6 +297,13 @@ class ModController
         $dateNow = date('Y-m-d');
         $log = "";
         $date = $_GET['date'] ?? $dateNow;
+
+        if(preg_match("/[a-z]/i", $date) || str_contains($date,'.') || str_contains($date,'/') ){
+            $date = $dateNow;
+        }
+        $date = htmlspecialchars($date);
+
+
         if (file_exists("../Logs/Mod/$date".".log")){
             $log = file_get_contents("../Logs/Mod/$date".".log");
             $logger->log("Access to /mod/activities with date: $date",'INFO',$_SESSION['username'],$_SESSION['role']);

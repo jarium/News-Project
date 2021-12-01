@@ -18,6 +18,7 @@ class NewsController
         $search = $_GET['search'] ?? '';
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /news: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
         }
 
@@ -40,6 +41,7 @@ class NewsController
         $url= substr($url,6);
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /news/$url: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
         }
 
@@ -72,6 +74,7 @@ class NewsController
             $search = $_GET['search'] ?? '';
 
             if ($search){
+                $search = htmlspecialchars($search);
                 $logger->log("Search attempt for /news/forme: $search",'INFO',$_SESSION['username'] ?? '0',$_SESSION['role'] ?? '0');
             }
 
@@ -183,8 +186,8 @@ class NewsController
         ];
     
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $newsData['title'] = $_POST['title'];
-            $newsData['content'] = $_POST['content'];
+            $newsData['title'] = htmlspecialchars($_POST['title']);
+            $newsData['content'] = htmlspecialchars($_POST['content']);
             $newsData['author'] = $_SESSION['username'];
             $newsData['author_id'] = $_SESSION['_id'];
             $newsData['imageFile'] = $_FILES['image'];
@@ -221,12 +224,15 @@ class NewsController
         $id = $_GET['_id'] ?? null;
         $warning = 0;
         $success = 0;
-        $errors= [];
-        $newsData = $router->db->getNewsById($id,true);
 
         if (!$id){
             $warning = 1;
+        }else{
+            $id = htmlspecialchars($id);
         }
+
+        $errors= [];
+        $newsData = $router->db->getNewsById($id,true);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             if (isset($_POST['delete'])){
@@ -241,8 +247,8 @@ class NewsController
                     $logger->log("Restored News with id: ".$id."",'NOTICE',$_SESSION['username'] ?? "0",$_SESSION['role'] ?? "0");
                 }
             }else{
-                $newsData['title'] = $_POST['title'];
-                $newsData['content'] = $_POST['content'];
+                $newsData['title'] = htmlspecialchars($_POST['title']);
+                $newsData['content'] = htmlspecialchars($_POST['content']);
                 $newsData['author'] = $_SESSION['username'];
                 $newsData['author_id'] = $_SESSION['_id'];
                 $newsData['imageFile'] = $_FILES['image'];
@@ -304,8 +310,8 @@ class NewsController
         ];
     
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $newsData['title'] = $_POST['title'];
-            $newsData['content'] = $_POST['content'];
+            $newsData['title'] = htmlspecialchars($_POST['title']);
+            $newsData['content'] = htmlspecialchars($_POST['content']);
             $newsData['author'] = $_SESSION['username'];
             $newsData['author_id'] = $_SESSION['_id'];
             $newsData['imageFile'] = $_FILES['image'];
@@ -357,13 +363,16 @@ class NewsController
         $warning = 0;
         $success = 0;
         $timeout = 0;
-        $errors= [];
-        
-        $newsData = $router->db->getEditorNewsById($editor_id,$news_id);
 
         if (!$news_id){
             $warning = 1;
+        }else{
+            $news_id = htmlspecialchars($news_id);
         }
+
+        $errors= [];
+        
+        $newsData = $router->db->getEditorNewsById($editor_id,$news_id);
 
         if ($newsData){
             
@@ -378,8 +387,8 @@ class NewsController
                 $timeout = 1;
             }else{
                 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-                    $newsData['title'] = $_POST['title'];
-                    $newsData['content'] = $_POST['content'];
+                    $newsData['title'] = htmlspecialchars($_POST['title']);
+                    $newsData['content'] = htmlspecialchars($_POST['content']);
                     $newsData['author'] = $_SESSION['username'];
                     $newsData['author_id'] = $_SESSION['_id'];
                     $newsData['imageFile'] = $_FILES['image'];

@@ -23,6 +23,12 @@ class AdminController
         $dateNow = date('Y-m-d');
         $log = "";
         $date = $_GET['date'] ?? $dateNow;
+        
+        if(preg_match("/[a-z]/i", $date) || str_contains($date,'.') || str_contains($date,'/') ){
+            $date = $dateNow;
+        }
+        $date = htmlspecialchars($date);
+
         if (file_exists("../Logs/Admin/$date".".log")){
             $log = file_get_contents("../Logs/Admin/$date".".log");
             $logger->log("Access to /admin/activities with date: $date",'INFO',$_SESSION['username'],$_SESSION['role']);
@@ -41,12 +47,14 @@ class AdminController
     {
         $logger = new Logger;
         $search = $_GET['search'] ?? "";
-        $users = $router->db->getUsers($search);
-        $users_count = count($router->db->getUsers());
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /admin/users: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
+
+        $users = $router->db->getUsers($search);
+        $users_count = count($router->db->getUsers());
 
         $router->renderView('admin/users', [
             'users' => $users,
@@ -60,12 +68,15 @@ class AdminController
     {
         $logger = new Logger;
         $_id = $_GET['_id'] ?? "";
-        $user = $router->db->getUsersById($_id);
-        $warning = 0;
-
+        
         if (!$_id){
             $warning = 1;
+        }else{
+            $_id = htmlspecialchars($_id);
         }
+
+        $user = $router->db->getUsersById($_id);
+        $warning = 0;
 
         if ($user){
             $role = $user['role'];

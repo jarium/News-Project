@@ -23,6 +23,7 @@ class EditorController
         $search = $_GET['search'] ?? '';
 
         if ($search){
+            $search = htmlspecialchars($search);
             $logger->log("Search attempt for /editor/mynews: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 

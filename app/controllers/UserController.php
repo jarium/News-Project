@@ -38,10 +38,10 @@ class UserController
         ];
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $userData['username'] = trim($_POST['username']);
-            $userData['firstname'] = trim($_POST['firstname']);
-            $userData['lastname'] = trim($_POST['lastname']);
-            $userData['email'] = trim($_POST['email']);
+            $userData['username'] = htmlspecialchars(trim($_POST['username']));
+            $userData['firstname'] = htmlspecialchars(trim($_POST['firstname']));
+            $userData['lastname'] = htmlspecialchars(trim($_POST['lastname']));
+            $userData['email'] = htmlspecialchars(trim($_POST['email']));
             $userData['password'] = $_POST['password'];
             $userData['password_confirm'] = $_POST['password_confirm'];
             
@@ -103,7 +103,7 @@ class UserController
 
         ];
         if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $userData['username'] = $_POST['username'];
+            $userData['username'] = htmlspecialchars($_POST['username']);
             $userData['password'] = $_POST['password'];
 
             $user= new User();
@@ -201,15 +201,16 @@ class UserController
         $logger = New Logger;
         $_id= Authentication::getUserSessionInfo('_id');
         $search = $_GET['search'] ?? '';
+        if ($search){
+            $search = htmlspecialchars($search);
+            $logger->log("Search attempt for /users/comments: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+        }
         $warning = "";
         $comments= $router->db->getCommentsByUserId($_id,$search);
         $comments_count = count($router->db->getCommentsByUserId($_id));
         
         if (!$comments_count){
             $warning = 1;
-        }
-        if ($search){
-            $logger->log("Search attempt for /users/comments: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
 
@@ -227,14 +228,17 @@ class UserController
         $logger = New Logger;
         $_id= Authentication::getUserSessionInfo('_id');
         $search = $_GET['search'] ?? '';
+
+        if ($search){
+            $search = htmlspecialchars($search);
+            $logger->log("Search attempt for /users/newsread: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
+        }
+        
         $warning = "";
         $news= $router->db->getUserNewsRead($_id,$search);
         $newsCount= count($router->db->getUserNewsRead($_id));
         if (!$newsCount){
             $warning = 1;
-        }
-        if ($search){
-            $logger->log("Search attempt for /users/newsread: $search",'INFO',$_SESSION['username'],$_SESSION['role']);
         }
 
         $router->renderView('users/news_read', [
