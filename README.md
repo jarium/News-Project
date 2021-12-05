@@ -17,7 +17,7 @@ After successfully installing, go to http://localhost:8082/ then login with the 
 - Password: `root`
 
 After logging in, create a database called `newspage` then import the `newspage.sql` file to adminer.
-After a successfull import, the database will be ready.
+After a successful import, the database will be ready.
 <br> <br>
 
 ## Routes
