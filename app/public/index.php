@@ -40,7 +40,7 @@ if (!MAINTENANCE){//Maintenance aktif değilse
 
     $router ->get('/about',[NewsController::class,'about']); //About sayfasına herkes erişebilir
 }else{
-    $router ->get('/',[NewsController::class, 'maintenance']); //Maintenance aktifse admin ve modlar dışındakiler için sadece burası aktif oluyor
+    $router ->get('/',[NewsController::class, 'maintenance']); //Maintenance aktifse sadece burası aktif oluyor
 }
 
 if ($auth->isLoggedIn() && !MAINTENANCE){//Giriş yapan kullanıcılar için route lar
