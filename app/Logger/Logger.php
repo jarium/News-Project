@@ -8,7 +8,7 @@ class Logger
     private $ip;
     private $role;
     private $logFile;
-    private $fileADress;
+    private $fileAdress;
     
     public function setup($role)
     {
